@@ -158,7 +158,7 @@ function TokenValidation() {
       {otpMessage && dish && (
         <p className="otp-message-dashboard success">
           {otpMessage}{' '}
-          <span className={getDishClass()}>{dish}</span>
+{/*           <span className={getDishClass()}>{dish}</span> */}
         </p>
       )}
       {error && <p className="otp-message-dashboard error">{error}</p>}
