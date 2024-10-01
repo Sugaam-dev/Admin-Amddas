@@ -1,0 +1,82 @@
+.booking-details {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
+  .booking-details h3 {
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .booking-details p {
+    margin: 5px 0;
+    color: #555;
+  }
+  
+  .success-message {
+    color: green;
+    margin-top: 10px;
+  }
+  
+  .error-message {
+    color: red;
+    margin-top: 10px;
+  }
+  
+  .book-booking-btn {
+    padding: 10px 20px;
+    background-color: #28a745; /* Green color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  
+  .book-booking-btn:hover {
+    background-color: #218838;
+  }
+  
+  .bulk-booking-dropdown {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+  }
+  
+  .bulk-booking-counter {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .bulk-booking-counter p {
+    margin-right: 10px;
+  }
+  
+  .counter-buttons {
+    display: flex;
+  }
+  
+  .counter-btn {
+    padding: 5px 10px;
+    margin-right: 5px;
+    background-color: #007bff; /* Blue color */
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .counter-btn:disabled {
+    background-color: #6c757d; /* Gray color */
+    cursor: not-allowed;
+  }
+  
+  .counter-btn:hover:not(:disabled) {
+    background-color: #0056b3;
+  }
+  

@@ -1,0 +1,275 @@
+/* dashboard.css */
+
+/* Reset some basic styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Container Setup */
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar Styling */
+.sidebar-dashboard {
+    width: 250px;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.sidebar-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.sidebar-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ecf0f1;
+}
+
+.dashboard-tabs {
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-dashboard-btn {
+    background: none;
+    border: none;
+    color: #ecf0f1;
+    padding: 12px 20px;
+    text-align: left;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.tab-dashboard-btn:hover,
+.tab-dashboard-btn.active {
+    background-color: #34495e;
+    border-radius: 4px;
+}
+
+.tab-icon {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.dashboard-logout {
+    margin-top: auto;
+}
+
+.logout-dashboard-btn {
+    background-color: #e74c3c;
+    border: none;
+    color: #fff;
+    padding: 12px 20px;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.logout-dashboard-btn:hover {
+    background-color: #c0392b;
+}
+
+.logout-icon {
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+/* Main Content Styling */
+.main-content-dashboard {
+    flex: 1;
+    padding: 40px;
+    background-color: #ecf0f1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard-section {
+    background-color: #fff;
+    padding: 30px 40px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+}
+
+.section-heading-dashboard {
+    margin-bottom: 20px;
+    color: #2c3e50;
+    text-align: center;
+}
+
+.otp-validation-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.otp-input {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 2px solid #bdc3c7;
+    border-radius: 4px;
+    width: 60%;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.otp-input:focus {
+    border-color: #3498db;
+}
+
+.validate-dashboard-btn {
+    margin-left: 10px;
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.validate-dashboard-btn:hover {
+    background-color: #2980b9;
+}
+
+.otp-message-dashboard {
+    text-align: center;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.otp-message-dashboard.success {
+    color: #4010ed;
+    font-size: 20px;
+}
+
+.otp-message-dashboard.error {
+    color: #e74c3c;
+}
+
+/* Styles for current dish based on type */
+.current-dish {
+    font-weight: bold; /* Make the dish name bold */
+}
+
+.current-dish.veg {
+    color: #27ae60; /* Green */
+}
+
+.current-dish.non-veg {
+    color: #c0392b; /* Red */
+}
+
+.current-dish.egg {
+    color: #f1c40f; /* Yellow */
+}
+
+.current-dish.unknown {
+    color: #7f8c8d; /* Gray */
+}
+
+/* Total Booking Styles */
+.total-booking-btn {
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    background-color: #1abc9c;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.total-booking-btn:hover {
+    background-color: #16a085;
+}
+
+.total-booking-counts p {
+    margin: 8px 0;
+    font-size: 18px;
+    text-align: center;
+}
+
+/* Bulk Booking Styles */
+.bulk-booking-dropdown {
+    padding: 10px 15px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    width: 100%;
+    border: 2px solid #bdc3c7;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.bulk-booking-dropdown:focus {
+    border-color: #3498db;
+}
+
+.bulk-booking-counter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bulk-booking-counter p {
+    font-size: 18px;
+}
+
+.counter-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.counter-btn {
+    background-color: #3498db;
+    border: none;
+    color: #fff;
+    padding: 8px 12px;
+    margin-left: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.counter-btn:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+.counter-btn:hover:not(:disabled) {
+    background-color: #2980b9;
+}
