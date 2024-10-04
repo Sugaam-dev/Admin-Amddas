@@ -6,42 +6,42 @@ import {jwtDecode} from 'jwt-decode'; // Correct default import
 
 import { port } from '../port/portno';
 import { logoutUser } from '../Redux/authActions';
-import '../Styles/dashboard.css'; // Ensure correct path
+import '../Styles/dashboard.css';
 
 function TokenValidation() {
+
+    // State hooks for dropdown and calendar
+    const [selectedEmailDomain, setSelectedEmailDomain] = useState(
+      '@borgwarner.com'
+    );
+
+     // Handler functions
+  const handleEmailChange = (e) => {
+    setSelectedEmailDomain(e.target.value);
+  };
+    
   // State for OTP validation
   const [otp, setOtp] = useState('');
   const [otpMessage, setOtpMessage] = useState('');
   const [error, setError] = useState('');
   const [menuid, setMenuid] = useState('');
   const [dish, setDish] = useState('');
-
+const[menuType,setMenuType]=useState('')
   // Redux Selectors
   const jwtToken = useSelector((state) => state.auth.token);
   const email = useSelector((state) => state.auth.email); // Get the logged-in user's email
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  console.log('Current Menu ID:', menuid);
+//   console.log('Current Menu ID:', menuid);
 
-  // Mapping of menuid to dish
-  const dishMap = {
-    1: 'Veg',
-    2: 'Veg',
-    3: 'Veg',
-    4: 'Non-Veg',
-    5: 'Egg',
-    7: 'Veg',
-  };
 
-  // Update dish based on menuid
-  useEffect(() => {
-    if (menuid in dishMap) {
-      setDish(dishMap[menuid]);
-    } else {
-      setDish('Unknown Dish'); // Handle unexpected menuid values
-    }
-  }, [menuid]);
+// console.log(menuType)
+
+
+ 
+
+ 
 
   // Decode JWT token
   let decoded;
@@ -80,15 +80,13 @@ function TokenValidation() {
 
       // Update menuid state
       setMenuid(receivedMenuId);
-
-      // Determine dish based on menuid
-      const currentDish = dishMap[receivedMenuId] || 'Unknown Dish';
+setMenuType(response.data.menuType)
+    
 
       // Set otpMessage using the determined dish
       setOtpMessage('Token is valid');
 
-      // Update dish state
-      setDish(currentDish);
+     
 
       setOtp(''); // Clear the input field after successful validation
       // Handle the response as needed
@@ -98,7 +96,9 @@ function TokenValidation() {
         dispatch(logoutUser());
         navigate('/login');
       } else {
-        setError('This token has already been validated. Please request a new one.');
+        setError(
+          'This token has already been validated. Please request a new one.'
+        );
       }
       setOtpMessage('');
       setDish(''); // Clear the dish if there's an error
@@ -118,22 +118,22 @@ function TokenValidation() {
     }
   };
 
-  // Function to determine the class based on the dish type
-  const getDishClass = () => {
-    switch (dish.toLowerCase()) {
-      case 'veg':
-        return 'current-dish veg';
-      case 'non-veg':
-        return 'current-dish non-veg';
-      case 'egg':
-        return 'current-dish egg';
-      default:
-        return 'current-dish unknown';
-    }
-  };
+
 
   return (
     <div className="dashboard-section">
+       <div className="input-box">
+          <label htmlFor="email-domain">Select Email Domain:</label>
+          <select
+            id="email-domain"
+            className="bulk-booking-dropdown"
+            value={selectedEmailDomain}
+            onChange={handleEmailChange}
+          >
+            <option value="@borgwarner.com">@borgwarner.com</option>
+            {/* <option value="@gmail.com">@gmail.com</option>   */}
+          </select>
+        </div>
       {/* Section 1: OTP Validation */}
       <h2 className="section-heading-dashboard">Token Validation</h2>
       <div className="otp-validation-container">
@@ -155,10 +155,10 @@ function TokenValidation() {
         </button>
       </div>
       {/* Display success or error messages */}
-      {otpMessage && dish && (
+      {otpMessage && menuType && (
         <p className="otp-message-dashboard success">
           {otpMessage}{' '}
-          <span className={getDishClass()}>{dish}</span>
+          <span>{menuType}</span>
         </p>
       )}
       {error && <p className="otp-message-dashboard error">{error}</p>}

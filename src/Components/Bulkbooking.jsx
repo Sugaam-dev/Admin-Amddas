@@ -1,323 +1,439 @@
+// import React, { useState } from 'react';
+// import axios from 'axios';
+// import { FaPlus, FaMinus } from 'react-icons/fa';
+// import { useSelector } from 'react-redux';
+// import { port } from '../port/portno';
+// import '../Styles/dashboard.css';
+
+// const Bulkbooking = () => {
+//   const [menuType, setMenuType] = useState('');
+//   const [selectedMenuId, setSelectedMenuId] = useState('');
+//   const [quantity, setQuantity] = useState(1);
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [message, setMessage] = useState('');
+
+//   const jwtToken = useSelector((state) => state.auth.token); // Adjust based on your Redux state structure
+
+//   // Define the menu IDs based on the types
+//   const menuData = {
+//     veg: 3, // Example: 'veg' corresponds to menu ID 3
+//     nonVeg: 4, // 'nonVeg' corresponds to menu ID 4
+//     egg: 5, // 'egg' corresponds to menu ID 5
+//   };
+
+//   // Handle dropdown change
+//   const handleMenuTypeChange = (e) => {
+//     const selectedType = e.target.value;
+//     setMenuType(selectedType);
+//     setSelectedMenuId(menuData[selectedType] || '');
+//     setQuantity(1);
+//     setMessage('');
+//   };
+
+//   // Handle quantity change
+//   const handleQuantityChange = (delta) => {
+//     setQuantity((prev) => Math.max(1, prev + delta));
+//   };
+
+//   // Handle form submission
+//   const handleSubmit = async () => {
+//     if (!selectedMenuId) {
+//       setMessage('Please select a valid menu type.');
+//       return;
+//     }
+
+//     setIsLoading(true);
+//     setMessage('');
+
+//     // Corrected URL with 'quantity' instead of 'quantities'
+//     const url = `${port}/api/orders/submit?menuIds=${selectedMenuId}&quantities=${quantity}`;
+
+//     try {
+//       const response = await axios.post(
+//         url,
+//         {}, // Empty body as per your API requirement
+//         {
+//           headers: {
+//             Authorization: `Bearer ${jwtToken}`, // Include JWT token
+//           },
+//         }
+//       );
+//       console.log(response);
+//       setMessage('Booking successful!');
+//     } catch (error) {
+//       if (error.response) {
+//         // Server responded with a status other than 2xx
+//         if (error.response.status === 403) {
+//           setMessage('You are not authorized to perform this action.');
+//         } else if (error.response.status === 400) {
+//           setMessage('Bad request. Please check your input.');
+//         } else {
+//           setMessage(
+//             `Error: ${error.response.data.message || 'An error occurred.'}`
+//           );
+//         }
+//       } else if (error.request) {
+//         // Request was made but no response received
+//         setMessage('No response from server. Please try again later.');
+//       } else {
+//         // Something happened in setting up the request
+//         setMessage(`Error: ${error.message}`);
+//       }
+//       console.error('Booking Error:', error);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="dashboard-section">
+//       <h2 className="section-heading-dashboard">Bulk Booking</h2>
+
+//       <select
+//         className="bulk-booking-dropdown"
+//         value={menuType}
+//         onChange={handleMenuTypeChange}
+//       >
+//         <option value="">Select Menu Type</option>
+//         {Object.keys(menuData).map((type) => (
+//           <option key={type} value={type}>
+//             {type.charAt(0).toUpperCase() + type.slice(1)}
+//           </option>
+//         ))}
+//       </select>
+
+//       <div className="bulk-booking-counter">
+//         <p>Quantity: {quantity}</p>
+//         <div className="counter-buttons">
+//           <button
+//             className="counter-btn"
+//             onClick={() => handleQuantityChange(-1)}
+//             disabled={quantity <= 1}
+//           >
+//             <FaMinus />
+//           </button>
+//           <button
+//             className="counter-btn"
+//             onClick={() => handleQuantityChange(1)}
+//           >
+//             <FaPlus />
+//           </button>
+//         </div>
+//       </div>
+
+//       <button
+//         className="validate-dashboard-btn"
+//         // onClick={handleSubmit}
+//         disabled={isLoading || !selectedMenuId}
+//       >
+//         {isLoading ? 'Booking...' : 'Submit Booking'}
+//       </button>
+
+//       {message && (
+//         <p
+//           className={`otp-message-dashboard ${
+//             message.includes('successful') ? 'success' : 'error'
+//           }`}
+//         >
+//           {message}
+//         </p>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Bulkbooking;
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import jwtDecode from 'jwt-decode'; // Ensure this is correctly installed and imported
 import { FaPlus, FaMinus } from 'react-icons/fa';
-import { useSelector } from 'react-redux'; // To access Redux state
+import { useSelector } from 'react-redux';
 import { port } from '../port/portno';
-import '../Styles/dashboard.css'; // Ensure correct path
+import '../Styles/dashboard.css';
 
-function Bulkbooking() {
-  // State variables for meal counts
-  const [vegCount, setVegCount] = useState(0);
-  const [eggCount, setEggCount] = useState(0);
-  const [nonVegCount, setNonVegCount] = useState(0);
+const Bulkbooking = () => {
+  const [bookedDay, setBookedDay] = useState(''); // Stores the booking day name
+  const [menuData, setMenuData] = useState({}); // Dynamic menu IDs based on booking day
+  const [menuType, setMenuType] = useState('');
+  const [selectedMenuId, setSelectedMenuId] = useState('');
+  const [quantity, setQuantity] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [tokenId, setTokenId] = useState(''); // New state for tokenId
 
-  // State variables for UI feedback
-  const [selectedType, setSelectedType] = useState('');
-  const [orderResponse, setOrderResponse] = useState('');
-  const [error, setError] = useState('');
+  const jwtToken = useSelector((state) => state.auth.token); // Adjust based on your Redux state structure
 
-  // State variables for booking details
-  const [token, setToken] = useState('');
-  const [tokenId, setTokenId] = useState('');
-  const [bookingDate, setBookingDate] = useState('');
-
-  // State variables for available meal types
-  const [availableMealTypes, setAvailableMealTypes] = useState([]);
-
-  // Access JWT token and user role from Redux store
-  const jwtToken = useSelector(state => state.auth.token); // Adjust based on your Redux setup
-  const role = useSelector(state => state.auth.role); // Assuming 'admin' or 'user'
-
-  // Mapping of menuIds based on day and meal type
-  const menuIdMap = {
-    Monday: {
-      veg: 1,
-      nonVeg: null,
-      egg: null,
-    },
-    Tuesday: {
-      veg: 2,
-      nonVeg: null,
-      egg: null,
-    },
-    Wednesday: {
-      veg: 3,
-      nonVeg: 4,
-      egg: 5,
-    },
-    // Add mappings for other days if necessary
-  };
-
-  /**
-   * Determines the booking date based on user role and current day.
-   * @returns {Date} - The determined booking date.
-   */
-  const determineBookingDate = () => {
-    const today = new Date();
-    const dayOfWeek = today.getDay(); // 0 (Sun) to 6 (Sat)
-    let bookingDate = new Date();
-
-    if (role === 'admin') {
-      if (dayOfWeek === 1) { // Monday
-        bookingDate.setDate(today.getDate() + 1); // Tuesday
-      } else if (dayOfWeek === 2) { // Tuesday
-        bookingDate.setDate(today.getDate() + 1); // Wednesday
-      } else if (dayOfWeek === 3) { // Wednesday
-        bookingDate.setDate(today.getDate() - 1); // Tuesday
-      } else if (dayOfWeek === 5 || dayOfWeek === 6) { // Friday or Saturday
-        // Calculate days to next Monday
-        const daysToAdd = (1 + 7 - dayOfWeek) % 7 || 7; // Ensure at least 1 day is added
-        bookingDate.setDate(today.getDate() + daysToAdd);
-      } else {
-        // For other days (e.g., Thursday, Sunday), set bookingDate to Monday
-        const daysToAdd = (1 + 7 - dayOfWeek) % 7 || 7;
-        bookingDate.setDate(today.getDate() + daysToAdd);
-      }
-    } else {
-      // Regular user books for today
-      bookingDate = new Date();
-    }
-
-    return bookingDate;
-  };
-
-  /**
-   * Retrieves the menuId based on booking date and meal type.
-   * @param {Date} date - The booking date.
-   * @param {string} type - The meal type ('veg', 'non-veg', 'egg').
-   * @param {string} role - The role of the user ('admin' or 'user').
-   * @returns {number|null} - The corresponding menuId or null if not found.
-   */
-  const getMenuId = (date, type, role) => {
-    let menuDay = date.toLocaleDateString('en-US', { weekday: 'long' });
-
-    // Admin specific mapping: If admin is booking for Tuesday, use Wednesday's menuId
-    if (role === 'admin') {
-      const bookingDay = date.getDay(); // 0 (Sun) to 6 (Sat)
-      if (bookingDay === 2) { // Tuesday
-        menuDay = 'Wednesday';
-      }
-      // If bookingDay is Monday or other days, menuDay remains as bookingDay
-    }
-
-    if (menuIdMap[menuDay] && menuIdMap[menuDay][type]) {
-      return menuIdMap[menuDay][type];
-    } else {
-      console.warn(`No menuId found for ${type} on ${menuDay}`);
-      return null;
-    }
-  };
-
-  /**
-   * Determines available meal types based on booking date.
-   * @param {Date} date - The booking date.
-   * @param {string} role - The role of the user.
-   * @returns {Array} - Array of available meal types.
-   */
-  const determineAvailableMealTypes = (date, role) => {
-    let menuDay = date.toLocaleDateString('en-US', { weekday: 'long' });
-
-    // Admin specific mapping: If admin is booking for Tuesday, use Wednesday's menuId
-    if (role === 'admin') {
-      const bookingDay = date.getDay();
-      if (bookingDay === 2) { // Tuesday
-        menuDay = 'Wednesday';
-      }
-    }
-
-    const availableTypes = [];
-    if (menuIdMap[menuDay]) {
-      Object.keys(menuIdMap[menuDay]).forEach(type => {
-        if (menuIdMap[menuDay][type] !== null) {
-          availableTypes.push(type);
-        }
-      });
-    }
-
-    return availableTypes;
-  };
-
-  // Determine booking date and available meal types on component mount or role/day change
   useEffect(() => {
-    const bookingDate = determineBookingDate();
-    setBookingDate(bookingDate);
-    const availableTypes = determineAvailableMealTypes(bookingDate, role);
-    setAvailableMealTypes(availableTypes);
-    // Reset selected meal type and counts when booking date changes
-    setSelectedType('');
-    setVegCount(0);
-    setEggCount(0);
-    setNonVegCount(0);
-  }, [role]);
+    // Function to determine the booking day based on current day
+    const determineBookingDay = () => {
+      const today = new Date();
+      const currentDay = today.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
+      let bookedDayDate;
 
-  // Handle incrementing meal counts
-  const incrementMeal = (type) => {
-    if (type === 'veg') setVegCount(prev => prev + 1);
-    if (type === 'egg') setEggCount(prev => prev + 1);
-    if (type === 'non-veg') setNonVegCount(prev => prev + 1);
+      if (currentDay >= 1 && currentDay <= 4) {
+        // Monday to Thursday: Book for the next day
+        bookedDayDate = new Date(today);
+        bookedDayDate.setDate(today.getDate() + 1);
+      } else if (currentDay === 5 || currentDay === 6) {
+        // Friday or Saturday: Book for Monday
+        const daysToAdd = 8 - currentDay; // 5 (Friday) +3=Monday, 6 (Saturday)+2=Monday
+        bookedDayDate = new Date(today);
+        bookedDayDate.setDate(today.getDate() + daysToAdd);
+      } else {
+        // Sunday: Book for Monday
+        bookedDayDate = new Date(today);
+        bookedDayDate.setDate(today.getDate() + 1);
+      }
+
+      const options = { weekday: 'long' };
+      const bookedDayName = bookedDayDate.toLocaleDateString('en-US', options);
+
+      return bookedDayName;
+    };
+
+    // Define the menu mapping based on the booking day
+    const menuDataMap = {
+      Monday: {
+        veg: 1,
+      },
+      Tuesday: {
+        veg: 2,
+      },
+      Wednesday: {
+        veg: 3,
+        nonVeg: 4,
+        egg: 5,
+      },
+      Thursday: {
+        veg: 6,
+      },
+      Friday: {
+        veg: 7,
+      },
+      // If needed, handle Saturday and Sunday
+      // For example:
+      // Sunday: { veg: 8 },
+    };
+
+    const bookingDay = determineBookingDay();
+    setBookedDay(bookingDay);
+
+    const menuTypesForDay = menuDataMap[bookingDay] || {};
+    setMenuData(menuTypesForDay);
+
+    const menuTypeKeys = Object.keys(menuTypesForDay);
+
+    if (menuTypeKeys.length === 1) {
+      // If only one menu type is available, auto-select it
+      const singleMenuType = menuTypeKeys[0];
+      setMenuType(singleMenuType);
+      setSelectedMenuId(menuTypesForDay[singleMenuType]);
+    } else {
+      // Reset selection if multiple menu types are available
+      setMenuType('');
+      setSelectedMenuId('');
+    }
+
+    // Reset quantity and messages when booking day changes
+    setQuantity(1);
+    setMessage('');
+    setTokenId('');
+  }, []);
+
+  // Handle dropdown change
+  const handleMenuTypeChange = (e) => {
+    const selectedType = e.target.value;
+    setMenuType(selectedType);
+    setSelectedMenuId(menuData[selectedType] || '');
+    setQuantity(1);
+    setMessage('');
+    setTokenId('');
   };
 
-  // Handle decrementing meal counts
-  const decrementMeal = (type) => {
-    if (type === 'veg' && vegCount > 0) setVegCount(prev => prev - 1);
-    if (type === 'egg' && eggCount > 0) setEggCount(prev => prev - 1);
-    if (type === 'non-veg' && nonVegCount > 0) setNonVegCount(prev => prev - 1);
+  // Handle quantity change
+  const handleQuantityChange = (delta) => {
+    setQuantity((prev) => Math.max(1, prev + delta));
   };
 
-  /**
-   * Handles the booking submission.
-   * @param {Event} e - The form submission event.
-   */
-  const handleBooking = async (e) => {
-    e.preventDefault();
-
-    // Determine the booking date based on role
-    const determinedBookingDate = determineBookingDate();
-    const dayOfWeek = determinedBookingDate.toLocaleDateString('en-US', { weekday: 'long' });
-
-    const bookings = [];
-
-    // Collect bookings for each meal type
-    if (vegCount > 0) {
-      const menuId = getMenuId(determinedBookingDate, 'veg', role);
-      if (menuId) {
-        bookings.push({ menuId, quantity: vegCount });
-      }
-    }
-
-    if (nonVegCount > 0) {
-      const menuId = getMenuId(determinedBookingDate, 'non-veg', role);
-      if (menuId) {
-        bookings.push({ menuId, quantity: nonVegCount });
-      }
-    }
-
-    if (eggCount > 0) {
-      const menuId = getMenuId(determinedBookingDate, 'egg', role);
-      if (menuId) {
-        bookings.push({ menuId, quantity: eggCount });
-      }
-    }
-
-    // Validate that at least one meal type is selected
-    if (bookings.length === 0) {
-      setError('Please select at least one meal type with quantity.');
+  // Handle form submission
+  const handleSubmit = async () => {
+    if (!selectedMenuId) {
+      setMessage('Please select a valid menu type.');
       return;
     }
 
-    // Prepare API request parameters
-    const menuIds = bookings.map(b => b.menuId).join(',');
-    const quantities = bookings.map(b => b.quantity).join(',');
-    const url = `${port}/api/orders/submit?menuIds=${menuIds}&quantities=${quantities}&bookingDate=${determinedBookingDate.toISOString()}`;
+    setIsLoading(true);
+    setMessage('');
+    setTokenId(''); // Reset tokenId before a new request
+
+    // Construct the booking date in YYYY-MM-DD format
+    const today = new Date();
+    const currentDay = today.getDay();
+    let bookedDayDate;
+
+    if (currentDay >= 1 && currentDay <= 4) {
+      bookedDayDate = new Date(today);
+      bookedDayDate.setDate(today.getDate() + 1);
+    } else if (currentDay === 5 || currentDay === 6) {
+      const daysToAdd = 8 - currentDay;
+      bookedDayDate = new Date(today);
+      bookedDayDate.setDate(today.getDate() + daysToAdd);
+    } else {
+      bookedDayDate = new Date(today);
+      bookedDayDate.setDate(today.getDate() + 1);
+    }
+
+    const year = bookedDayDate.getFullYear();
+    const month = String(bookedDayDate.getMonth() + 1).padStart(2, '0');
+    const day = String(bookedDayDate.getDate()).padStart(2, '0');
+    const bookingDate = `${year}-${month}-${day}`;
+
+    // Maintain the original API call structure
+    const url = `${port}/api/orders/submit?menuIds=${selectedMenuId}&quantities=${quantity}`;
 
     try {
       const response = await axios.post(
         url,
-        {},
+        {}, // Empty body as per your API requirement
         {
           headers: {
-            Authorization: `Bearer ${jwtToken}`,
+            Authorization: `Bearer ${jwtToken}`, // Include JWT token
           },
         }
       );
-
-      console.log('Booking Response:', response.data);
-
-      if (response.data.success) {
-        const { token, tokenId, bookingDate: responseBookingDate } = response.data.data;
-
-        setOrderResponse(response.data.message || 'Order submitted successfully.');
-        setToken(token);
-        setTokenId(tokenId);
-        setBookingDate(new Date(responseBookingDate));
-
-        // Reset meal counts and selections
-        setVegCount(0);
-        setNonVegCount(0);
-        setEggCount(0);
-        setSelectedType('');
-        setError('');
+      console.log(response);
+      
+      // Extract tokenId using regex
+      const dataString = response.data;
+      const tokenRegex = /token Id is\s*-?(\d+)/i;
+      const match = dataString.match(tokenRegex);
+      
+      if (match && match[1]) {
+        setTokenId(match[1]);
+        setMessage('Booking successful!');
       } else {
-        // Handle unsuccessful API response
-        setError(response.data.message || 'Failed to submit booking.');
+        setMessage('Booking successful, but token ID could not be retrieved.');
       }
     } catch (error) {
-      console.error('Error submitting booking:', error);
-      setError('Failed to submit booking. Please try again.');
+      if (error.response) {
+        // Server responded with a status other than 2xx
+        if (error.response.status === 403) {
+          setMessage('You are not authorized to perform this action.');
+        } else if (error.response.status === 400) {
+          setMessage('Bad request. Please check your input.');
+        } else {
+          setMessage(
+            `Error: ${error.response.data.message || 'An error occurred.'}`
+          );
+        }
+      } else if (error.request) {
+        // Request was made but no response received
+        setMessage('No response from server. Please try again later.');
+      } else {
+        // Something happened in setting up the request
+        setMessage(`Error: ${error.message}`);
+      }
+      console.error('Booking Error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <>
-      {/* Section: Bulk Booking */}
-      <div className="dashboard-section">
-        <h2 className="section-heading-dashboard">Bulk Booking</h2>
+    <div className="dashboard-section">
+      <h2 className="section-heading-dashboard">Bulk Booking</h2>
 
-        {/* Display Booking Date */}
-        <p><strong>Booking Date:</strong> {bookingDate ? bookingDate.toLocaleDateString() : 'N/A'}</p>
+      {/* Display the booking day */}
+      {bookedDay && (
+        <p className="booking-day-display" style={{display:"flex",alignItems:"center"}}>
+          <strong>Booking for :   </strong> <h2>{ bookedDay}</h2> 
+        </p>
+      )}
 
-        {/* Meal Type Selection Dropdown */}
+      {/* Menu Type Selection */}
+      <div className="menu-type-selection">
+        <label htmlFor="menuType">Select Menu Type:</label>
         <select
+          id="menuType"
           className="bulk-booking-dropdown"
-          value={selectedType}
-          onChange={(e) => setSelectedType(e.target.value)}
+          value={menuType}
+          onChange={handleMenuTypeChange}
+          disabled={Object.keys(menuData).length === 1}
         >
-          <option value="">Select Meal Type</option>
-          {availableMealTypes.includes('veg') && <option value="veg">Veg</option>}
-          {availableMealTypes.includes('egg') && <option value="egg">Egg</option>}
-          {availableMealTypes.includes('non-veg') && <option value="non-veg">Non-Veg</option>}
+          {Object.keys(menuData).length > 1 && (
+            <option value="">Select Menu Type</option>
+          )}
+          {Object.keys(menuData).map((type) => (
+            <option key={type} value={type}>
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </option>
+          ))}
         </select>
-
-        {/* Meal Count Counter */}
-        {selectedType && (
-          <div className="bulk-booking-counter">
-            <p>
-              {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)} Count: {selectedType === 'veg' ? vegCount : selectedType === 'egg' ? eggCount : nonVegCount}
-            </p>
-            <div className="counter-buttons">
-              <button
-                className="counter-btn"
-                onClick={() => decrementMeal(selectedType)}
-                disabled={
-                  (selectedType === 'veg' && vegCount === 0) ||
-                  (selectedType === 'egg' && eggCount === 0) ||
-                  (selectedType === 'non-veg' && nonVegCount === 0)
-                }
-              >
-                <FaMinus />
-              </button>
-              <button
-                className="counter-btn"
-                onClick={() => incrementMeal(selectedType)}
-              >
-                <FaPlus />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Display Order Response or Error Messages */}
-        {orderResponse && <p className="success-message">{orderResponse}</p>}
-        {error && <p className="error-message">{error}</p>}
-
-        {/* Display Token, Token ID, and Booking Date */}
-        {token && tokenId && bookingDate && (
-          <div className="booking-details">
-            <h3>Booking Details</h3>
-            <p><strong>Token:</strong> {token}</p>
-            <p><strong>Token ID:</strong> {tokenId}</p>
-            <p><strong>Booking Date:</strong> {bookingDate.toLocaleDateString()}</p>
-          </div>
-        )}
-
-        {/* Book Booking Button */}
-        <button className="book-booking-btn" onClick={handleBooking}>
-          Book Booking
-        </button>
       </div>
-    </>
+
+      {/* Quantity Selector */}
+      <div className="bulk-booking-counter">
+        <p>Quantity: {quantity}</p>
+        <div className="counter-buttons">
+          <button
+            className="counter-btn"
+            onClick={() => handleQuantityChange(-1)}
+            disabled={quantity <= 1}
+            aria-label="Decrease quantity"
+          >
+            <FaMinus />
+          </button>
+          <button
+            className="counter-btn"
+            onClick={() => handleQuantityChange(1)}
+            aria-label="Increase quantity"
+          >
+            <FaPlus />
+          </button>
+        </div>
+      </div>
+
+      {/* Submit Button */}
+      <button
+        className="validate-dashboard-btn"
+        // onClick={handleSubmit}
+        disabled={isLoading || !selectedMenuId}
+      >
+        {isLoading ? 'Booking...' : 'Submit Booking'}
+      </button>
+
+      {/* Message Display */}
+      {message && (
+        <p
+          className={`otp-message-dashboard ${
+            message.includes('successful') ? 'success' : 'error'
+          }`}
+        >
+          {message}
+        </p>
+      )}
+
+      {/* Token ID Display */}
+      {tokenId && (
+      <div className="token-id-display">
+      <h3 className="token-instruction">
+      Ensure the security of your Token ID. Warning: The token will no longer be available after a page reload.
+      </h3>
+      <div className="token-id-box">
+        <span className="token-label">Your Token ID:</span>
+        <span className="token-number">{tokenId}</span>
+      </div>
+      </div>
+      )}
+    </div>
   );
-}
+};
 
 export default Bulkbooking;
+
+
+
+

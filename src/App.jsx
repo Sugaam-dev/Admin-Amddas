@@ -5,6 +5,7 @@ import './App.css';
 import Login from './Components/Login';
 import Home from './Components/Home';
 import PrivateRoute from './Components/PrivateRoute';
+import MenuChange from './Components/MenuChange';
 
 
 
@@ -24,6 +25,16 @@ function App() {
           element={
             <PrivateRoute>
               <Home />
+           
+            </PrivateRoute>
+          }
+        />
+
+<Route
+          path="/home/menu"
+          element={
+            <PrivateRoute>
+          <MenuChange/>
            
             </PrivateRoute>
           }
