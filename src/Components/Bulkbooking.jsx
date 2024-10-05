@@ -399,7 +399,7 @@ const Bulkbooking = () => {
       {/* Submit Button */}
       <button
         className="validate-dashboard-btn"
-        // onClick={handleSubmit}
+         onClick={handleSubmit}
         disabled={isLoading || !selectedMenuId}
       >
         {isLoading ? 'Booking...' : 'Submit Booking'}
