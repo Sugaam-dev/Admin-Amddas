@@ -26,6 +26,14 @@ function Sidebar() {
 const menu=()=>{
   navigate('/home/menu')
 }
+
+const report=()=>{
+  navigate('/home/report')
+}
+// const report=()=>{
+//   navigate('/home/report')
+// }
+
   return (
     <>
             {/* Sidebar */}
@@ -38,7 +46,8 @@ const menu=()=>{
             <FaTachometerAlt className="tab-icon" />
             Dashboard
           </button>
-          <button className="tab-dashboard-btn">
+          {/* onClick={report} */}
+          <button  className="tab-dashboard-btn">
             <FaFileAlt className="tab-icon" />
             Report Generation
           </button>

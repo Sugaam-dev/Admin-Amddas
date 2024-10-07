@@ -158,14 +158,14 @@ const Bulkbooking = () => {
   const [bookedDay, setBookedDay] = useState(''); // Stores the booking day name
   const [menuData, setMenuData] = useState({}); // Dynamic menu IDs based on booking day
   const [menuType, setMenuType] = useState('');
-  const [selectedMenuId, setSelectedMenuId] = useState('');
-  const [quantity, setQuantity] = useState(1);
+  const [selectedMenuId, setSelectedMenuId] = useState();
+  const [quantity, setQuantity] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [tokenId, setTokenId] = useState(''); // New state for tokenId
-
+console.log(quantity)
   const jwtToken = useSelector((state) => state.auth.token); // Adjust based on your Redux state structure
-
+console.log("hh"+selectedMenuId)
   useEffect(() => {
     // Function to determine the booking day based on current day
     const determineBookingDay = () => {
@@ -399,7 +399,7 @@ const Bulkbooking = () => {
       {/* Submit Button */}
       <button
         className="validate-dashboard-btn"
-        // onClick={handleSubmit}
+        onClick={handleSubmit}
         disabled={isLoading || !selectedMenuId}
       >
         {isLoading ? 'Booking...' : 'Submit Booking'}

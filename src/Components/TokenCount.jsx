@@ -13,7 +13,7 @@ const[error,setError]=useState('')
   // State hooks for dropdown and calendar
   const [selectedEmailDomain, setSelectedEmailDomain] = useState('@borgwarner.com');
   const [selectedDate, setSelectedDate] = useState('');
-
+const[selelctEnd,setEnd]=useState('')
 
   const jwtToken = useSelector((state) => state.auth.token);
 
@@ -23,9 +23,15 @@ const[error,setError]=useState('')
     setSelectedEmailDomain(e.target.value);
   };
 
+  const handleDate=(e)=>{
+    setEnd(e.target.value)
+  }
+
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
   };
+
+
 
   const handleCountClick = async () => {
 if(selectedEmailDomain && selectedDate !== ''){
@@ -35,7 +41,7 @@ if(selectedEmailDomain && selectedDate !== ''){
 
   try {
     const response = await axios.get(
-      `${port}/api/orders/count?date=${selectedDate}&domain=${selectedEmailDomain}`,
+      `${port}/api/orders/count?startdate=${selectedDate}&enddate=${selelctEnd}&domain=${selectedEmailDomain}`,
       {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
@@ -89,7 +95,7 @@ setEggCount(response.data.totalEggCount)
 
         {/* Date Picker */}
         <div className="input-box">
-          <label htmlFor="date-picker">Select Date:</label>
+          <label htmlFor="date-picker">From Date:</label>
           <input
             type="date"
             id="date-picker"
@@ -98,6 +104,18 @@ setEggCount(response.data.totalEggCount)
             onChange={handleDateChange}
           />
         </div>
+
+        <div className="input-box">
+          <label htmlFor="date-picker">To Date:</label>
+          <input
+            type="date"
+            id="date-picker"
+            className="bulk-booking-dropdown"
+            value={selelctEnd}
+            onChange={handleDate}
+          />
+        </div>
+
       </div>
 
       {/* Count Button */}

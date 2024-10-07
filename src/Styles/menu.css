@@ -1,0 +1,151 @@
+/* dashboard.css */
+
+/* Container Styles */
+.menu-container {
+    flex: 1;
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  /* Title */
+  .menu-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  /* Filter Buttons */
+  .filter-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .filter-btn {
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.2s;
+  }
+  
+  .veg-btn {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .egg-btn {
+    background-color: #ffc107;
+    color: white;
+  }
+  
+  .nonveg-btn {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .filter-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  /* Active Button Styles */
+  .filter-btn.active-veg {
+    background-color: #218838; /* Darker green */
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .filter-btn.active-egg {
+    background-color: #e0a800; /* Darker yellow */
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .filter-btn.active-nonveg {
+    background-color: #c82333; /* Darker red */
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Menu List */
+  .menu-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  /* Menu Item Card */
+  .menu-item-card {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: calc(33.333% - 20px);
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .menu-item-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .menu-item-details {
+    flex: 1;
+  }
+  
+  .item-name {
+    font-size: 18px;
+    margin: 0 0 10px 0;
+    color: #333;
+  }
+  
+  .item-category {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  /* Action Icons */
+  .menu-item-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .action-icon {
+    font-size: 20px; /* Increased size for better visibility */
+    color: #555;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .edit-icon:hover {
+    color: #007bff; /* Blue for edit */
+  }
+  
+  .delete-icon:hover {
+    color: #dc3545; /* Red for delete */
+  }
+  
+  /* No Items Found */
+  .no-items-found {
+    font-size: 16px;
+    color: #999;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .menu-item-card {
+      width: calc(50% - 20px);
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .menu-item-card {
+      width: 100%;
+    }
+  }
+  

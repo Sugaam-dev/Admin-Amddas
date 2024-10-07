@@ -6,7 +6,7 @@ import Login from './Components/Login';
 import Home from './Components/Home';
 import PrivateRoute from './Components/PrivateRoute';
 import MenuChange from './Components/MenuChange';
-
+import Report from './Components/Report';
 
 
 function App() {
@@ -35,6 +35,16 @@ function App() {
           element={
             <PrivateRoute>
           <MenuChange/>
+           
+            </PrivateRoute>
+          }
+        />
+
+<Route
+          path="/home/report"
+          element={
+            <PrivateRoute>
+   <Report/>
            
             </PrivateRoute>
           }

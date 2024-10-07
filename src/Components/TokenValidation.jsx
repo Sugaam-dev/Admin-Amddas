@@ -27,6 +27,13 @@ function TokenValidation() {
   const [menuid, setMenuid] = useState('');
   const [dish, setDish] = useState('');
 const[menuType,setMenuType]=useState('')
+const[quantity,setQuantity]=useState()
+const[uses,SetUses]=useState()
+
+console.log(quantity)
+console.log(uses)
+
+
   // Redux Selectors
   const jwtToken = useSelector((state) => state.auth.token);
   const email = useSelector((state) => state.auth.email); // Get the logged-in user's email
@@ -81,7 +88,8 @@ const[menuType,setMenuType]=useState('')
       // Update menuid state
       setMenuid(receivedMenuId);
 setMenuType(response.data.menuType)
-    
+    setQuantity(response.data.quantity)
+    SetUses(response.data.orderQtyCount)
 
       // Set otpMessage using the determined dish
       setOtpMessage('Token is valid');
