@@ -1,249 +1,72 @@
-// import React, { useState } from 'react';
-// import axios from 'axios';
-// import { FaPlus, FaMinus } from 'react-icons/fa';
-// import { useSelector } from 'react-redux';
-// import { port } from '../port/portno';
-// import '../Styles/dashboard.css';
+// Bulkbooking.jsx
 
-// const Bulkbooking = () => {
-//   const [menuType, setMenuType] = useState('');
-//   const [selectedMenuId, setSelectedMenuId] = useState('');
-//   const [quantity, setQuantity] = useState(1);
-//   const [isLoading, setIsLoading] = useState(false);
-//   const [message, setMessage] = useState('');
-
-//   const jwtToken = useSelector((state) => state.auth.token); // Adjust based on your Redux state structure
-
-//   // Define the menu IDs based on the types
-//   const menuData = {
-//     veg: 3, // Example: 'veg' corresponds to menu ID 3
-//     nonVeg: 4, // 'nonVeg' corresponds to menu ID 4
-//     egg: 5, // 'egg' corresponds to menu ID 5
-//   };
-
-//   // Handle dropdown change
-//   const handleMenuTypeChange = (e) => {
-//     const selectedType = e.target.value;
-//     setMenuType(selectedType);
-//     setSelectedMenuId(menuData[selectedType] || '');
-//     setQuantity(1);
-//     setMessage('');
-//   };
-
-//   // Handle quantity change
-//   const handleQuantityChange = (delta) => {
-//     setQuantity((prev) => Math.max(1, prev + delta));
-//   };
-
-//   // Handle form submission
-//   const handleSubmit = async () => {
-//     if (!selectedMenuId) {
-//       setMessage('Please select a valid menu type.');
-//       return;
-//     }
-
-//     setIsLoading(true);
-//     setMessage('');
-
-//     // Corrected URL with 'quantity' instead of 'quantities'
-//     const url = `${port}/api/orders/submit?menuIds=${selectedMenuId}&quantities=${quantity}`;
-
-//     try {
-//       const response = await axios.post(
-//         url,
-//         {}, // Empty body as per your API requirement
-//         {
-//           headers: {
-//             Authorization: `Bearer ${jwtToken}`, // Include JWT token
-//           },
-//         }
-//       );
-//       console.log(response);
-//       setMessage('Booking successful!');
-//     } catch (error) {
-//       if (error.response) {
-//         // Server responded with a status other than 2xx
-//         if (error.response.status === 403) {
-//           setMessage('You are not authorized to perform this action.');
-//         } else if (error.response.status === 400) {
-//           setMessage('Bad request. Please check your input.');
-//         } else {
-//           setMessage(
-//             `Error: ${error.response.data.message || 'An error occurred.'}`
-//           );
-//         }
-//       } else if (error.request) {
-//         // Request was made but no response received
-//         setMessage('No response from server. Please try again later.');
-//       } else {
-//         // Something happened in setting up the request
-//         setMessage(`Error: ${error.message}`);
-//       }
-//       console.error('Booking Error:', error);
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="dashboard-section">
-//       <h2 className="section-heading-dashboard">Bulk Booking</h2>
-
-//       <select
-//         className="bulk-booking-dropdown"
-//         value={menuType}
-//         onChange={handleMenuTypeChange}
-//       >
-//         <option value="">Select Menu Type</option>
-//         {Object.keys(menuData).map((type) => (
-//           <option key={type} value={type}>
-//             {type.charAt(0).toUpperCase() + type.slice(1)}
-//           </option>
-//         ))}
-//       </select>
-
-//       <div className="bulk-booking-counter">
-//         <p>Quantity: {quantity}</p>
-//         <div className="counter-buttons">
-//           <button
-//             className="counter-btn"
-//             onClick={() => handleQuantityChange(-1)}
-//             disabled={quantity <= 1}
-//           >
-//             <FaMinus />
-//           </button>
-//           <button
-//             className="counter-btn"
-//             onClick={() => handleQuantityChange(1)}
-//           >
-//             <FaPlus />
-//           </button>
-//         </div>
-//       </div>
-
-//       <button
-//         className="validate-dashboard-btn"
-//         // onClick={handleSubmit}
-//         disabled={isLoading || !selectedMenuId}
-//       >
-//         {isLoading ? 'Booking...' : 'Submit Booking'}
-//       </button>
-
-//       {message && (
-//         <p
-//           className={`otp-message-dashboard ${
-//             message.includes('successful') ? 'success' : 'error'
-//           }`}
-//         >
-//           {message}
-//         </p>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default Bulkbooking;
-
-
-
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import axios from 'axios';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { port } from '../port/portno';
 import '../Styles/dashboard.css';
+import Calender from './Cal'; // Ensure this path is correct
 
 const Bulkbooking = () => {
-  const [bookedDay, setBookedDay] = useState(''); // Stores the booking day name
-  const [menuData, setMenuData] = useState({}); // Dynamic menu IDs based on booking day
+  const [bookedDay, setBookedDay] = useState('');
+  const [menuData, setMenuData] = useState({});
   const [menuType, setMenuType] = useState('');
-  const [selectedMenuId, setSelectedMenuId] = useState();
-  const [quantity, setQuantity] = useState();
+  const [selectedMenuId, setSelectedMenuId] = useState('');
+  const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [tokenId, setTokenId] = useState(''); // New state for tokenId
-console.log(quantity)
-  const jwtToken = useSelector((state) => state.auth.token); // Adjust based on your Redux state structure
-console.log("hh"+selectedMenuId)
-  useEffect(() => {
-    // Function to determine the booking day based on current day
-    const determineBookingDay = () => {
-      const today = new Date();
-      const currentDay = today.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
-      let bookedDayDate;
+  const [tokenId, setTokenId] = useState('');
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [bookingDate, setBookingDate] = useState(null); // Mapped booking date
 
-      if (currentDay >= 1 && currentDay <= 4) {
-        // Monday to Thursday: Book for the next day
-        bookedDayDate = new Date(today);
-        bookedDayDate.setDate(today.getDate() + 1);
-      } else if (currentDay === 5 || currentDay === 6) {
-        // Friday or Saturday: Book for Monday
-        const daysToAdd = 8 - currentDay; // 5 (Friday) +3=Monday, 6 (Saturday)+2=Monday
-        bookedDayDate = new Date(today);
-        bookedDayDate.setDate(today.getDate() + daysToAdd);
-      } else {
-        // Sunday: Book for Monday
-        bookedDayDate = new Date(today);
-        bookedDayDate.setDate(today.getDate() + 1);
-      }
+  const jwtToken = useSelector((state) => state.auth.token);
 
-      const options = { weekday: 'long' };
-      const bookedDayName = bookedDayDate.toLocaleDateString('en-US', options);
+  /**
+   * Handles the date selected from the Calender component.
+   * Uses the selected date directly as the booking date.
+   */
+  const handleDateSelected = useCallback((date) => {
+    setSelectedDate(date);
+    setBookingDate(date); // Use the selected date directly
 
-      return bookedDayName;
-    };
+    // Update the booked day name based on the booking date
+    const options = { weekday: 'long' };
+    const bookedDayName = date.toLocaleDateString('en-US', options);
+    setBookedDay(bookedDayName);
 
-    // Define the menu mapping based on the booking day
+    // Define menu data mapping based on the booked day
     const menuDataMap = {
-      Monday: {
-        veg: 1,
-      },
-      Tuesday: {
-        veg: 2,
-      },
-      Wednesday: {
-        veg: 3,
-        nonVeg: 4,
-        egg: 5,
-      },
-      Thursday: {
-        veg: 6,
-      },
-      Friday: {
-        veg: 7,
-      },
-      // If needed, handle Saturday and Sunday
-      // For example:
-      // Sunday: { veg: 8 },
+      Monday: { veg: 1 },
+      Tuesday: { veg: 2 },
+      Wednesday: { veg: 3, nonVeg: 4, egg: 5 },
+      Thursday: { veg: 6 },
+      Friday: { veg: 7 },
+      // Saturdays and Sundays are not selectable, so no need to add them
     };
 
-    const bookingDay = determineBookingDay();
-    setBookedDay(bookingDay);
-
-    const menuTypesForDay = menuDataMap[bookingDay] || {};
+    const menuTypesForDay = menuDataMap[bookedDayName] || {};
     setMenuData(menuTypesForDay);
 
     const menuTypeKeys = Object.keys(menuTypesForDay);
 
     if (menuTypeKeys.length === 1) {
-      // If only one menu type is available, auto-select it
       const singleMenuType = menuTypeKeys[0];
       setMenuType(singleMenuType);
       setSelectedMenuId(menuTypesForDay[singleMenuType]);
     } else {
-      // Reset selection if multiple menu types are available
       setMenuType('');
       setSelectedMenuId('');
     }
 
-    // Reset quantity and messages when booking day changes
     setQuantity(1);
     setMessage('');
     setTokenId('');
   }, []);
 
-  // Handle dropdown change
+  /**
+   * Handles changes in the menu type dropdown.
+   */
   const handleMenuTypeChange = (e) => {
     const selectedType = e.target.value;
     setMenuType(selectedType);
@@ -253,46 +76,39 @@ console.log("hh"+selectedMenuId)
     setTokenId('');
   };
 
-  // Handle quantity change
+  /**
+   * Handles quantity changes with increment and decrement.
+   */
   const handleQuantityChange = (delta) => {
     setQuantity((prev) => Math.max(1, prev + delta));
   };
 
-  // Handle form submission
+  /**
+   * Handles form submission to book the selected menu on the booking date.
+   */
   const handleSubmit = async () => {
     if (!selectedMenuId) {
       setMessage('Please select a valid menu type.');
       return;
     }
 
-    setIsLoading(true);
-    setMessage('');
-    setTokenId(''); // Reset tokenId before a new request
-
-    // Construct the booking date in YYYY-MM-DD format
-    const today = new Date();
-    const currentDay = today.getDay();
-    let bookedDayDate;
-
-    if (currentDay >= 1 && currentDay <= 4) {
-      bookedDayDate = new Date(today);
-      bookedDayDate.setDate(today.getDate() + 1);
-    } else if (currentDay === 5 || currentDay === 6) {
-      const daysToAdd = 8 - currentDay;
-      bookedDayDate = new Date(today);
-      bookedDayDate.setDate(today.getDate() + daysToAdd);
-    } else {
-      bookedDayDate = new Date(today);
-      bookedDayDate.setDate(today.getDate() + 1);
+    if (!bookingDate) { // Use bookingDate instead of selectedDate
+      setMessage('Please select a booking date.');
+      return;
     }
 
-    const year = bookedDayDate.getFullYear();
-    const month = String(bookedDayDate.getMonth() + 1).padStart(2, '0');
-    const day = String(bookedDayDate.getDate()).padStart(2, '0');
-    const bookingDate = `${year}-${month}-${day}`;
+    setIsLoading(true);
+    setMessage('');
+    setTokenId('');
 
-    // Maintain the original API call structure
-    const url = `${port}/api/orders/submit?menuIds=${selectedMenuId}&quantities=${quantity}`;
+    // Format the booking date to YYYY-MM-DD
+    const year = bookingDate.getFullYear();
+    const month = String(bookingDate.getMonth() + 1).padStart(2, '0');
+    const day = String(bookingDate.getDate()).padStart(2, '0');
+    const formattedBookingDate = `${year}-${month}-${day}`;
+
+    // Construct the API URL with the selected booking date
+    const url = `${port}/api/orders/submit?menuIds=${selectedMenuId}&quantities=${quantity}&deliveryDate=${formattedBookingDate}`;
 
     try {
       const response = await axios.post(
@@ -305,12 +121,12 @@ console.log("hh"+selectedMenuId)
         }
       );
       console.log(response);
-      
-      // Extract tokenId using regex
+
+      // Extract tokenId using the updated regex
       const dataString = response.data;
-      const tokenRegex = /token Id is\s*-?(\d+)/i;
+      const tokenRegex = /Your tokens are:\s*(\d+)/i;
       const match = dataString.match(tokenRegex);
-      
+
       if (match && match[1]) {
         setTokenId(match[1]);
         setMessage('Booking successful!');
@@ -346,10 +162,26 @@ console.log("hh"+selectedMenuId)
     <div className="dashboard-section">
       <h2 className="section-heading-dashboard">Bulk Booking</h2>
 
+      {/* Integrate the Calender component */}
+      <div className="calendar-section">
+        <Calender passdata={handleDateSelected} />
+      </div>
+
+      {/* Display the selected booking date */}
+      {bookingDate && (
+        <p className="booking-date-display" style={{ display: "flex", alignItems: "center" }}>
+          <strong>Booking Date: </strong>
+          <span style={{ marginLeft: "10px" }}>
+            {bookingDate.toLocaleDateString('en-US')}
+          </span>
+        </p>
+      )}
+
       {/* Display the booking day */}
       {bookedDay && (
-        <p className="booking-day-display" style={{display:"flex",alignItems:"center"}}>
-          <strong>Booking for :   </strong> <h2>{ bookedDay}</h2> 
+        <p className="booking-day-display" style={{ display: "flex", alignItems: "center" }}>
+          <strong>Booking for: </strong>
+          <span style={{ marginLeft: "10px" }}>{bookedDay}</span>
         </p>
       )}
 
@@ -418,22 +250,18 @@ console.log("hh"+selectedMenuId)
 
       {/* Token ID Display */}
       {tokenId && (
-      <div className="token-id-display">
-      <h3 className="token-instruction">
-      Ensure the security of your Token ID. Warning: The token will no longer be available after a page reload.
-      </h3>
-      <div className="token-id-box">
-        <span className="token-label">Your Token ID:</span>
-        <span className="token-number">{tokenId}</span>
-      </div>
-      </div>
+        <div className="token-id-display">
+          <h3 className="token-instruction">
+            Ensure the security of your Token ID. Warning: The token will no longer be available after a page reload.
+          </h3>
+          <div className="token-id-box">
+            <span className="token-label">Your Token ID:</span>
+            <span className="token-number">{tokenId}</span>
+          </div>
+        </div>
       )}
     </div>
   );
 };
 
 export default Bulkbooking;
-
-
-
-

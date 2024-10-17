@@ -1,0 +1,16 @@
+.input-group-text{
+    height: 40px;
+    cursor: pointer;
+}
+
+.Calender{
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+/* .input-group{
+    border-top-right-radius:1px;
+    border-bottom-right-radius:1px;
+} */

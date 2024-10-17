@@ -39,7 +39,6 @@ console.log(uses)
   const email = useSelector((state) => state.auth.email); // Get the logged-in user's email
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
 //   console.log('Current Menu ID:', menuid);
 
 
@@ -47,7 +46,7 @@ console.log(uses)
 
 
  
-
+console.log(jwtToken)
  
 
   // Decode JWT token
@@ -74,7 +73,7 @@ console.log(uses)
 
     try {
       const response = await axios.get(
-        `${port}/api/order-details/verify-token/${otp}`,
+        `${port}/api/order-details/verify-token?token=${otp}`,
         {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
@@ -100,9 +99,8 @@ setMenuType(response.data.menuType)
       // Handle the response as needed
     } catch (err) {
       if (err.response && err.response.status === 403) {
-        setError('You need to log in again.');
-        dispatch(logoutUser());
-        navigate('/login');
+        setError('');
+      
       } else {
         setError(
           'This token has already been validated. Please request a new one.'

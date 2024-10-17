@@ -46,8 +46,8 @@ const report=()=>{
             <FaTachometerAlt className="tab-icon" />
             Dashboard
           </button>
-          {/* onClick={report} */}
-          <button  className="tab-dashboard-btn">
+          
+          <button onClick={report} className="tab-dashboard-btn">
             <FaFileAlt className="tab-icon" />
             Report Generation
           </button>
