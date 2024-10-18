@@ -23,8 +23,20 @@
     justify-content: space-between;
     padding: 20px;
     height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translateX(-100%); /* Hidden by default */
+    transition: transform 0.3s ease-in-out;
+    z-index: 1000;
 }
 
+/* Show the sidebar when the "show" class is applied */
+.sidebar-dashboard.show {
+    transform: translateX(0);
+}
+
+/* Sidebar Header */
 .sidebar-header {
     text-align: center;
     margin-bottom: 30px;
@@ -36,6 +48,7 @@
     color: #ecf0f1;
 }
 
+/* Sidebar Tabs */
 .dashboard-tabs {
     display: flex;
     flex-direction: column;
@@ -65,6 +78,7 @@
     font-size: 18px;
 }
 
+/* Sidebar Logout */
 .dashboard-logout {
     margin-top: auto;
 }
@@ -90,6 +104,29 @@
 .logout-icon {
     margin-right: 8px;
     font-size: 18px;
+}
+
+/* Hamburger Menu Icon */
+.hamburger-menu {
+    display: block;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 30px;
+    cursor: pointer;
+    color: #2c3e50;
+    z-index: 1100; /* Ensure the hamburger menu is above the sidebar */
+}
+
+/* Close Icon */
+.close-icon {
+    display: block;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 30px;
+    color: #ecf0f1;
+    cursor: pointer;
 }
 
 /* Main Content Styling */
@@ -135,22 +172,6 @@
     /* Optional: Add specific styles if needed */
 }
 
-/* Bottom Content Styling (Removed as it's now part of content-columns)
-.bottom-content {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-top: 20px;
-    justify-content: flex-start;
-}
-
-.bottom-content .dashboard-section {
-    flex: 1;
-    min-width: 250px;
-    max-width: 400px;
-}
-*/
-
 /* Responsive Adjustments */
 @media (max-width: 800px) {
     .content-columns {
@@ -163,13 +184,33 @@
     }
 }
 
+/* Sidebar width adjustment for small screens */
+@media (max-width: 600px) {
+    .sidebar-dashboard {
+        width: 100%;
+    }
+
+    .tab-dashboard-btn {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+
+    .logout-dashboard-btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .tab-icon {
+        font-size: 16px;
+    }
+}
+
 /* Optional: Add spacing between sections */
 .dashboard-section {
     background-color: #fff;
     padding: 5px 10px;
-    margin-bottom: 5px; /* Adjusted to provide spacing between sections */
+    margin-bottom: 5px;
     border-radius: 8px;
-    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
     width: 100%;
 }
 
@@ -181,7 +222,7 @@
     font-size: 22px;
 }
 
-/* OTP Validation Styles (from TokenValidation.jsx) */
+/* OTP Validation Styles */
 .otp-validation-container {
     display: flex;
     justify-content: center;
@@ -241,23 +282,23 @@
 
 /* Styles for current dish based on type */
 .current-dish {
-    font-weight: bold; /* Make the dish name bold */
+    font-weight: bold;
 }
 
 .current-dish.veg {
-    color: #27ae60; /* Green */
+    color: #27ae60;
 }
 
 .current-dish.non-veg {
-    color: #c0392b; /* Red */
+    color: #c0392b;
 }
 
 .current-dish.egg {
-    color: #f1c40f; /* Yellow */
+    color: #f1c40f;
 }
 
 .current-dish.unknown {
-    color: #7f8c8d; /* Gray */
+    color: #7f8c8d;
 }
 
 /* Total Booking Styles */
@@ -352,7 +393,7 @@
 }
 
 .validate-dashboard-btn.error {
-    background-color: #e74c3c;
+    background-color: #e74c3c
 }
 
 /* Message Styling */
@@ -364,7 +405,6 @@
     color: #e74c3c;
 }
 
-
 /* Container for the Token ID section */
 .token-id-display {
     margin-top: 20px;
@@ -374,31 +414,31 @@
     background-color: #f9fff9; /* Light green background */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     text-align: center;
-  }
-  
-  /* Instructional heading */
-  .token-instruction {
+}
+
+/* Instructional heading */
+.token-instruction {
     font-size: 1.2rem;
     color: #333333;
     margin-bottom: 15px;
-  }
-  
-  /* Container for the Token ID */
-  .token-id-box {
+}
+
+/* Container for the Token ID */
+.token-id-box {
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-  
-  /* Label for the Token ID */
-  .token-label {
+}
+
+/* Label for the Token ID */
+.token-label {
     font-size: 1rem;
     color: #555555;
     margin-bottom: 5px;
-  }
-  
-  /* Token number styling */
-  .token-number {
+}
+
+/* Token number styling */
+.token-number {
     font-size: 2.5rem;
     font-weight: bold;
     color: #2E7D32; /* Dark green */
@@ -408,22 +448,21 @@
     letter-spacing: 2px;
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
-  }
-  
-  /* Token number hover effect */
-  .token-number:hover {
+}
+
+/* Token number hover effect */
+.token-number:hover {
     transform: scale(1.05);
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 600px) {
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
     .token-number {
-      font-size: 2rem;
-      padding: 8px 16px;
+        font-size: 2rem;
+        padding: 8px 16px;
     }
-  
+
     .token-instruction {
-      font-size: 1rem;
+        font-size: 1rem;
     }
-  }
-  
+}

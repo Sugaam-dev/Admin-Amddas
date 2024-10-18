@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react';
 import '../Styles/dashboard.css';
 import { useDispatch } from 'react-redux';
 import { logoutUser } from '../Redux/authActions';
@@ -8,36 +8,53 @@ import {
   FaFileAlt,
   FaUtensils,
   FaSignOutAlt,
+  FaBars,
+  FaTimes, // Close icon for mobile/large screens
 } from 'react-icons/fa';
+
 function Sidebar() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false); // State to control sidebar visibility
 
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-  
-    const handleLogout = () => {
-      dispatch(logoutUser());
-      navigate('/');
-    };
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate('/');
+  };
 
-    const home = () => {
-     
-      navigate('/home');
-    };
-const menu=()=>{
-  navigate('/home/menu')
-}
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen); // Toggle the sidebar visibility
+  };
 
-const report=()=>{
-  navigate('/home/report')
-}
-// const report=()=>{
-//   navigate('/home/report')
-// }
+  const closeSidebar = () => {
+    setSidebarOpen(false); // Close the sidebar
+  };
+
+  const home = () => {
+    navigate('/home');
+  };
+
+  const menu = () => {
+    navigate('/home/menu');
+  };
+
+  const report = () => {
+    navigate('/home/report');
+  };
 
   return (
     <>
-            {/* Sidebar */}
-            <div className="sidebar-dashboard">
+      {/* Hamburger menu for all screen sizes */}
+      <div className="hamburger-menu" onClick={toggleSidebar}>
+        <FaBars />
+      </div>
+
+      {/* Sidebar */}
+      <div className={`sidebar-dashboard ${sidebarOpen ? 'show' : ''}`}>
+        {/* Close icon for all screen sizes */}
+        <div className="close-icon" onClick={closeSidebar}>
+          <FaTimes />
+        </div>
         <div className="sidebar-header">
           <h1 className="sidebar-title">Admin Panel</h1>
         </div>
@@ -46,7 +63,7 @@ const report=()=>{
             <FaTachometerAlt className="tab-icon" />
             Dashboard
           </button>
-          
+
           <button onClick={report} className="tab-dashboard-btn">
             <FaFileAlt className="tab-icon" />
             Report Generation
@@ -64,7 +81,7 @@ const report=()=>{
         </div>
       </div>
     </>
-  )
+  );
 }
 
-export default Sidebar
+export default Sidebar;
