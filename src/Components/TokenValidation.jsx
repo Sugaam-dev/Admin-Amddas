@@ -98,7 +98,7 @@ setMenuType(response.data.menuType)
       // Handle the response as needed
     } catch (err) {
       if (err.response && err.response.status === 403) {
-        setError('');
+        setError('Select a valid token/ may be token is for future uses');
       
       } else {
         setError(
