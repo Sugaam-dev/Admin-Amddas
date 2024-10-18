@@ -30,8 +30,7 @@ const[menuType,setMenuType]=useState('')
 const[quantity,setQuantity]=useState()
 const[uses,SetUses]=useState()
 
-console.log(quantity)
-console.log(uses)
+
 
 
   // Redux Selectors
@@ -39,14 +38,14 @@ console.log(uses)
   const email = useSelector((state) => state.auth.email); // Get the logged-in user's email
   const dispatch = useDispatch();
   const navigate = useNavigate();
-//   console.log('Current Menu ID:', menuid);
 
 
-// console.log(menuType)
+
+
 
 
  
-console.log(jwtToken)
+
  
 
   // Decode JWT token
