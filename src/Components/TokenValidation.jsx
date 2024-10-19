@@ -30,7 +30,8 @@ const[menuType,setMenuType]=useState('')
 const[quantity,setQuantity]=useState()
 const[uses,SetUses]=useState()
 
-
+console.log(quantity)
+console.log(uses)
 
 
   // Redux Selectors
@@ -38,14 +39,14 @@ const[uses,SetUses]=useState()
   const email = useSelector((state) => state.auth.email); // Get the logged-in user's email
   const dispatch = useDispatch();
   const navigate = useNavigate();
+//   console.log('Current Menu ID:', menuid);
 
 
-
-
+// console.log(menuType)
 
 
  
-
+console.log(jwtToken)
  
 
   // Decode JWT token
@@ -98,7 +99,7 @@ setMenuType(response.data.menuType)
       // Handle the response as needed
     } catch (err) {
       if (err.response && err.response.status === 403) {
-        setError('');
+        setError('Select a valid token/ may be token is for future uses');
       
       } else {
         setError(
@@ -110,7 +111,7 @@ setMenuType(response.data.menuType)
       setOtp(''); // Clear the input field after an error
     }
   };
-
+console.log(decoded)
   // Handler for OTP input change
   const handleOtpChange = (e) => {
     const value = e.target.value;
@@ -163,7 +164,8 @@ setMenuType(response.data.menuType)
       {otpMessage && menuType && (
         <p className="otp-message-dashboard success">
           {otpMessage}{' '}
-          <span>{menuType}</span>
+          <span>{menuType}   </span>
+          <strong>Quantity: {quantity}</strong>
         </p>
       )}
       {error && <p className="otp-message-dashboard error">{error}</p>}

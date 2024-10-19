@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode'
+import {jwtDecode} from 'jwt-decode'; // Correct import
 import { loginRequest, loginSuccess, loginFailure, logout, clearError } from './authSlice';
 import { port } from '../port/portno.js';
 
@@ -19,9 +19,15 @@ export const loginUser = (email, password) => async (dispatch) => {
       const decoded = jwtDecode(token); // Decode the JWT token
       const userEmail = decoded.sub; // Assuming the email is stored in the "sub" field of the JWT
       const userId = decoded.userId; // Assuming userId is stored in the token
+      const userRole = decoded.role; // Extract the role
 
-      // Dispatch success action with token and decoded email and userId
-      dispatch(loginSuccess({ token, email: userEmail, userId }));
+      if (userRole === 'ADMIN') {
+        // Dispatch success action with token and decoded email, userId, and role
+        dispatch(loginSuccess({ token, email: userEmail, userId, role: userRole }));
+      } else {
+        // If not ADMIN, dispatch failure with specific error message
+        dispatch(loginFailure({ error: "Access denied. Only administrators can log in." }));
+      }
 
     } else {
       dispatch(loginFailure({ error: "Invalid login credentials" }));
@@ -30,9 +36,9 @@ export const loginUser = (email, password) => async (dispatch) => {
     let errorMessage = "Login failed. Please try again.";
     
     if (error.response && error.response.data && error.response.data.message) {
-      errorMessage ="Invalid login credentials"; // Backend specific error message
+      errorMessage = error.response.data.message; // Use backend's error message
     } else if (error.message) {
-      errorMessage = "Invalid login credentials"; // Generic error message (network issues, etc.)
+      errorMessage = "Invalid login credentials"; // Generic error message
     }
 
     dispatch(loginFailure({ error: errorMessage }));

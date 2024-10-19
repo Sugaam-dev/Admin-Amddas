@@ -42,11 +42,15 @@ function Sidebar() {
     navigate('/home/report');
   };
 
+  const bulk=()=>{
+    navigate('/home/bulkbooking')
+  }
+
   return (
     <>
       {/* Hamburger menu for all screen sizes */}
       <div className="hamburger-menu" onClick={toggleSidebar}>
-        <FaBars />
+        <FaBars style={{marginBottom:"40px",marginLeft:"-20px"}}/>
       </div>
 
       {/* Sidebar */}
@@ -63,7 +67,10 @@ function Sidebar() {
             <FaTachometerAlt className="tab-icon" />
             Dashboard
           </button>
-
+          <button onClick={bulk} className="tab-dashboard-btn">
+            <FaUtensils className="tab-icon" />
+            BulkBooking
+          </button>
           <button onClick={report} className="tab-dashboard-btn">
             <FaFileAlt className="tab-icon" />
             Report Generation

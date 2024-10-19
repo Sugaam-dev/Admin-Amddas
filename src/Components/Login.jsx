@@ -5,7 +5,7 @@ import { clearError } from '../Redux/authSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import '../Styles/login.css';
 import AutoTyping from './AutoTyping';
-import TextField from '@mui/material/TextField'; // Make sure this is the correct import
+import TextField from '@mui/material/TextField';
 
 const Log = () => {
   const [email, setEmail] = useState('');

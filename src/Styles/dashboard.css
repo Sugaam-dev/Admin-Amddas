@@ -132,7 +132,7 @@
 /* Main Content Styling */
 .main-content-dashboard {
     flex: 1;
-    padding: 20px 40px;
+    padding: 20px 10px;
     background-color: #ecf0f1;
     overflow-y: auto;
     display: flex;
@@ -153,13 +153,14 @@
     flex-direction: column;
     flex: 1;
     min-width: 300px;
+    margin-left: 100px;
 }
 
 /* Ensure dashboard-section takes full width within columns */
 .left-column .dashboard-section,
 .right-column .dashboard-section {
     flex: 1;
-    max-width: 100%;
+    max-width: 95%;
 }
 
 /* Top Section: TokenValidation and TokenCount */
@@ -178,9 +179,14 @@
         flex-direction: column;
     }
 
-    .left-column,
+    .left-column .dashboard-section,
     .right-column {
         min-width: 100%;
+        max-width: 100%;
+       
+    }
+    .left-column{
+        margin-left: 0px;
     }
 }
 
@@ -346,7 +352,7 @@
 
 .bulk-booking-counter {
     display: flex;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     align-items: center;
 }
 

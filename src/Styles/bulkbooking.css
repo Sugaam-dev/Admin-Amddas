@@ -1,0 +1,534 @@
+/* bulkbooking.css */
+
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 0;
+    color: #333;
+  }
+  
+  .dashboard-container {
+    display: flex;
+    min-height: 100vh;
+  }
+  
+  /* Sidebar Styles */
+  .sidebar {
+    width: 250px;
+    background-color: #1976d2; /* Primary color */
+    color: #fff;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .sidebar h2 {
+    margin-top: 0;
+    text-align: center;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar li {
+    margin: 15px 0;
+  }
+  
+  .sidebar a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    display: block;
+    padding: 10px;
+    border-radius: 4px;
+  }
+  
+  .sidebar a:hover {
+    background-color: #115293; /* Darker shade on hover */
+  }
+  
+  /* Main Content Styles */
+  .main-content {
+    flex: 1;
+    padding: 30px;
+    box-sizing: border-box;
+    background-color: #fff;
+  }
+  
+  /* Section Heading */
+  .section-heading-dashboard {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: #1976d2; /* Primary color */
+  }
+  
+  /* Calendar Section */
+  .calendar-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Booking Date Display */
+  .booking-date-display,
+  .booking-day-display {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .booking-date-display strong,
+  .booking-day-display strong {
+    margin-right: 10px;
+    color: #1976d2;
+  }
+  
+  /* Menu Type Selection */
+  .menu-type-selection {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .menu-type-selection label {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .bulk-booking-dropdown {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  /* Quantity Selector */
+  .bulk-booking-counter {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .bulk-booking-counter label {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  
+  .quantity-selector {
+    display: flex;
+    align-items: center;
+  }
+  
+  .counter-btn {
+    background-color: #1976d2;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    margin: 0 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+  }
+  
+  .counter-btn:disabled {
+    background-color: #a0a0a0;
+    cursor: not-allowed;
+  }
+  
+  .counter-btn:hover:not(:disabled) {
+    background-color: #115293;
+  }
+  
+  .quantity-input {
+    width: 60px;
+    text-align: center;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    -moz-appearance: textfield;
+  }
+  
+  .quantity-input::-webkit-inner-spin-button,
+  .quantity-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  /* Submit Button */
+  .validate-dashboard-btn {
+    width: 100%;
+    max-width: 300px;
+    padding: 12px;
+    background-color: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0 auto;
+    display: block;
+  }
+  
+  .validate-dashboard-btn:disabled {
+    background-color: #a0a0a0;
+    cursor: not-allowed;
+  }
+  
+  .validate-dashboard-btn:hover:not(:disabled) {
+    background-color: #115293;
+  }
+  
+  /* Message Display */
+  .otp-message-dashboard {
+    margin-top: 20px;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-size: 1rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+  
+  .otp-message-dashboard.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+  
+  .otp-message-dashboard.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+  
+  /* Token ID Display */
+  .token-id-display {
+    margin-top: 30px;
+    padding: 15px;
+    background-color: #e3f2fd;
+    border-left: 5px solid #1976d2;
+    border-radius: 4px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .token-instruction {
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .token-id-box {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .token-label {
+    font-weight: bold;
+    margin-right: 10px;
+    font-size: 1.1rem;
+  }
+  
+  .token-number {
+    background-color: #fff;
+    padding: 8px 12px;
+    border: 1px solid #1976d2;
+    border-radius: 4px;
+    font-size: 1rem;
+    word-break: break-all;
+  }
+  
+  /* Order Details Section */
+  .order-details-section {
+    margin-top: 40px;
+  }
+  
+  .order-details-section h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #1976d2;
+    text-align: center;
+  }
+  
+  .loading-spinner {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #1976d2;
+  }
+  
+  .error-message {
+    color: #dc3545;
+    font-size: 1rem;
+    text-align: center;
+  }
+  
+  /* Order Cards Container */
+  .order-cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  
+  /* OTP Card Styles */
+  .otp-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 15px 20px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+  
+  .otp-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .otp-details {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .otp-item {
+    margin-bottom: 8px;
+  }
+  
+  .otp-label {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 2px;
+  }
+  
+  .otp-value {
+    color: #333;
+  }
+  
+  .del-icon {
+    display: flex;
+    align-items: center;
+  }
+  
+  .delete-btn {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+  }
+  
+  .delete-btn:disabled {
+    background-color: #a0a0a0;
+    cursor: not-allowed;
+  }
+  
+  .delete-btn:hover:not(:disabled) {
+    background-color: #c82333;
+  }
+  
+  /* Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 90%;
+    max-width: 500px;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    outline: none;
+  }
+  
+  .modal h2 {
+    margin-top: 0;
+    color: #1976d2;
+  }
+  
+  .modal p {
+    font-size: 1rem;
+    margin: 20px 0;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .modal-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+  }
+  
+  .confirm-btn {
+    background-color: #dc3545;
+    color: #fff;
+  }
+  
+  .confirm-btn:hover {
+    background-color: #c82333;
+  }
+  
+  .cancel-btn {
+    background-color: #6c757d;
+    color: #fff;
+  }
+  
+  .cancel-btn:hover {
+    background-color: #5a6268;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .sidebar {
+      width: 200px;
+    }
+  
+    .section-heading-dashboard {
+      font-size: 1.8rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .dashboard-container {
+      flex-direction: column;
+    }
+  
+    .sidebar {
+      width: 100%;
+      order: 2;
+    }
+  
+    .main-content {
+      order: 1;
+      padding: 20px;
+    }
+  
+    .bulk-booking-counter {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .bulk-booking-counter label {
+      margin-bottom: 10px;
+    }
+  
+    .quantity-selector {
+      width: 100%;
+    }
+  
+    .quantity-input {
+      width: 100px;
+      margin: 0 10px;
+    }
+  
+    .order-cards-container {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  
+
+  /* bulkbooking.css */
+
+/* Confirmation Dialog Styling (Optional if using default MUI styles) */
+
+/* Delete Button within Cards */
+.del-icon {
+    display: flex;
+    align-items: center;
+  }
+  
+  .delete-btn {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+  }
+  
+  .delete-btn:disabled {
+    background-color: #a0a0a0;
+    cursor: not-allowed;
+  }
+  
+  .delete-btn:hover:not(:disabled) {
+    background-color: #c82333;
+  }
+  
+  /* Ensure Carousel Items Look Consistent */
+  .otp-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 15px 20px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+  
+  .otp-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .otp-details {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .otp-item {
+    margin-bottom: 8px;
+  }
+  
+  .otp-label {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 2px;
+  }
+  
+  .otp-value {
+    color: #333;
+  }
+  
+  /* Confirmation Dialog Customization (Optional) */
+  .MuiDialog-paper {
+    padding: 20px;
+  }
+  

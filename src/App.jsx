@@ -7,10 +7,15 @@ import Home from './Components/Home';
 import PrivateRoute from './Components/PrivateRoute';
 import MenuChange from './Components/MenuChange';
 import Report from './Components/Report';
+import Bulkbooking from './Components/Bulkbooking';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function App() {
   return (
+<>
+    <ToastContainer/>
     <Router>
      {/* <Sidebar/> */}
           <Routes>
@@ -50,11 +55,22 @@ function App() {
           }
         />
 
+<Route
+          path="/home/bulkbooking"
+          element={
+            <PrivateRoute>
+   <Bulkbooking/>
+           
+            </PrivateRoute>
+          }
+        />
+
 
           </Routes>
          
 
     </Router>
+    </>
   );
 }
 

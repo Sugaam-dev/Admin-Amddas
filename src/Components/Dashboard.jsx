@@ -9,10 +9,11 @@ import Sidebar from './Sidebar';
 const Dashboard = () => {
   return (
     <div className="dashboard-container">
-      <Sidebar />
+    
 
       {/* Main Content */}
       <div className="main-content-dashboard">
+      <Sidebar />
         <div className="content-columns">
           {/* Left Column: TokenValidation and TokenCount */}
           <div className="left-column">
@@ -26,13 +27,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Right Column: Bulkbooking */}
-          <div className="right-column">
-            <div className="dashboard-section">
-
-              <Bulkbooking />
-            </div>
-          </div>
         </div>
       </div>
     </div>
