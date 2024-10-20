@@ -30,8 +30,8 @@ const[menuType,setMenuType]=useState('')
 const[quantity,setQuantity]=useState()
 const[uses,SetUses]=useState()
 
-console.log(quantity)
-console.log(uses)
+// console.log(quantity)
+// console.log(uses)
 
 
   // Redux Selectors
@@ -46,7 +46,7 @@ console.log(uses)
 
 
  
-console.log(jwtToken)
+// console.log(jwtToken)
  
 
   // Decode JWT token
