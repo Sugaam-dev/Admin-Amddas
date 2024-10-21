@@ -13,6 +13,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField'; // Import TextField for Edit Dialog
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -37,6 +38,11 @@ const Bulkbooking = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [tokenToDelete, setTokenToDelete] = useState('');
   const [cancellationDate, setCancellationDate] = useState('');
+
+  // States for Edit Dialog
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [tokenToEdit, setTokenToEdit] = useState('');
+  const [newQuantity, setNewQuantity] = useState('');
 
   // Define quantityMap and setQuantityMap
   const [quantityMap, setQuantityMap] = useState({});
@@ -390,6 +396,118 @@ const Bulkbooking = () => {
     }
   };
 
+  /**
+   * Handles opening the edit dialog.
+   * @param {Event} e - The event triggered by clicking the edit button.
+   * @param {string} token - The token ID to be edited.
+   * @param {number} currentQuantity - The current quantity of the token.
+   */
+  const handleEditClick = (e, token, currentQuantity) => {
+    e.preventDefault();
+    setIsEditDialogOpen(true);
+    setTokenToEdit(token);
+    setNewQuantity(currentQuantity);
+  };
+
+  /**
+   * Handles closing the edit dialog.
+   */
+  const handleCloseEditDialog = () => {
+    setIsEditDialogOpen(false);
+    setTokenToEdit('');
+    setNewQuantity('');
+  };
+
+  /**
+   * Handles confirming the edit of a token's quantity.
+   */
+  const handleConfirmEdit = async (e) => {
+    e.preventDefault();
+
+    // Validate new quantity
+    const parsedQuantity = parseInt(newQuantity, 10);
+    if (isNaN(parsedQuantity) || parsedQuantity < 1) {
+      toast.error('Please enter a valid quantity.');
+      return;
+    }
+
+    // Check if within allowed time before proceeding
+    if (!isWithinAllowedTime()) {
+      setError('Token editing is only allowed between 12 PM to 8 PM.');
+      setIsEditDialogOpen(false);
+      toast.error('Token editing is only allowed between 12 PM to 8 PM.');
+      return;
+    }
+
+    try {
+      // API request configuration
+      const config = {
+        method: 'put',
+        maxBodyLength: Infinity, // Allow large request body
+        url: `${port}/api/order-details/update?token=${tokenToEdit}&quantity=${parsedQuantity}`,
+        headers: { 
+          'Authorization': `Bearer ${jwtToken}`
+        }
+      };
+
+      // Make API request to update the token
+      const response = await axios.request(config);
+
+      console.log('Update API Response:', response.data); // Verify response structure
+
+      if (response.status === 200) {
+        // Update the quantity in the local state
+        setResponse((prev) =>
+          prev.map((item) =>
+            item.token === tokenToEdit ? { ...item, quantity: parsedQuantity } : item
+          )
+        );
+
+        // Optionally, update quantityMap based on the new quantity
+        setQuantityMap((prevMap) => {
+          const updatedMap = { ...prevMap };
+          
+          // Assuming response.data is the updated order item
+          const updatedItem = response.data; // Adjust based on actual response structure
+          
+          if (updatedItem) {
+            const deliveryDate = formatDateToYYYYMMDD(new Date(updatedItem.deliveryDate));
+            
+            // Find the previous quantity for this delivery date
+            const previousQuantity = prevMap[deliveryDate] || 0;
+
+            // Calculate the new total quantity
+            // This assumes you only have one token per delivery date.
+            // Adjust this logic if multiple tokens can share the same delivery date.
+            updatedMap[deliveryDate] = previousQuantity - (prevMap[deliveryDate] || 0) + parsedQuantity;
+          }
+
+          return updatedMap;
+        });
+
+        // Close the dialog
+        setIsEditDialogOpen(false);
+
+        // Show toast notification
+        toast.success('Your order has been updated successfully.');
+      } else {
+        setError('Failed to update order. Please try again.');
+        toast.error('Failed to update order. Please try again.');
+      }
+    } catch (error) {
+      // Log error for debugging
+      console.error('Error updating order:', error);
+
+      if (error.response?.status === 400) {
+        setError('Bad request. Please check your input.');
+        toast.error('Bad request. Please check your input.');
+      } else {
+        setError('An error occurred while updating the order. Please try again.');
+        toast.error('An error occurred while updating the order. Please try again.');
+      }
+    }
+  };
+
   return (
     <div className="dashboard-container">
       <Sidebar />
@@ -527,7 +645,8 @@ const Bulkbooking = () => {
                       </div>
                     </div>
 
-                    <div className="del-icon">
+                    <div className="action-icons">
+                      {/* Delete Button */}
                       <Button
                         variant="outlined"
                         onClick={(e) => handleClickOpen(e, row.token, row.deliveryDate)}
@@ -537,8 +656,23 @@ const Bulkbooking = () => {
                             ? 'Token deletion is only allowed between 12 PM to 8 PM.'
                             : 'Delete Token'
                         }
+                        style={{ marginRight: '8px' }}
                       >
                         <RiDeleteBin5Fill />
+                      </Button>
+
+                      {/* Edit Button */}
+                      <Button
+                        variant="outlined"
+                        onClick={(e) => handleEditClick(e, row.token, row.quantity)}
+                        disabled={!isWithinAllowedTime()}
+                        title={
+                          !isWithinAllowedTime
+                            ? 'Token editing is only allowed between 12 PM to 8 PM.'
+                            : 'Edit Token'
+                        }
+                      >
+                        Edit
                       </Button>
                     </div>
                   </div>
@@ -575,6 +709,46 @@ const Bulkbooking = () => {
             </Button>
             <Button onClick={handleCloseDialog} autoFocus>
               No
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Edit Confirmation Dialog */}
+        <Dialog
+          open={isEditDialogOpen}
+          onClose={handleCloseEditDialog}
+          aria-labelledby="confirm-edit-dialog-title"
+          aria-describedby="confirm-edit-dialog-description"
+        >
+          <DialogTitle id="confirm-edit-dialog-title">
+            {"Edit Quantity"}
+          </DialogTitle>
+          <div style={{ padding: '0 24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <p>Enter the new quantity for token <strong>{tokenToEdit}</strong>:</p>
+            <TextField
+              label="New Quantity"
+              type="number"
+              value={newQuantity}
+              onChange={(e) => setNewQuantity(e.target.value)}
+              inputProps={{ min: 1 }}
+              fullWidth
+            />
+          </div>
+          <DialogActions>
+            <Button
+              onClick={handleConfirmEdit}
+              color="primary"
+              disabled={!isWithinAllowedTime()}
+              title={
+                !isWithinAllowedTime
+                  ? 'Token editing is only allowed between 12 PM to 8 PM.'
+                  : 'Confirm'
+              }
+            >
+              Confirm
+            </Button>
+            <Button onClick={handleCloseEditDialog} autoFocus>
+              Cancel
             </Button>
           </DialogActions>
         </Dialog>
