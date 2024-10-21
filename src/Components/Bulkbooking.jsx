@@ -360,7 +360,7 @@ const Bulkbooking = () => {
       let config = {
         method: 'put',
         maxBodyLength: Infinity, // Allow large request body
-        url: `${port}/api/order-details/cancel`, // Correct API URL
+        url: `${port}/api/order-details/cancel?role=${userRole}&email=${encodeURIComponent(userEmail)}`, // Correct API URL
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${jwtToken}`,
@@ -455,7 +455,7 @@ const Bulkbooking = () => {
       const config = {
         method: 'put',
         maxBodyLength: Infinity, // Allow large request body
-        url: `${port}/api/order-details/update?token=${tokenToEdit}&quantity=${parsedQuantity}`,
+        url: `${port}/api/order-details/update?token=${tokenToEdit}&quantity=${parsedQuantity}&role=${userRole}&email=${encodeURIComponent(userEmail)}`,
         headers: { 
           'Authorization': `Bearer ${jwtToken}`
         }
