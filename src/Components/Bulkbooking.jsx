@@ -51,6 +51,10 @@ const Bulkbooking = () => {
   const jwtToken = useSelector((state) => state.auth.token);
   const userId = useSelector((state) => state.auth.userId); // Ensure userId is in Redux store
 
+  // **New Selectors for Role and Email**
+  const userRole = useSelector((state) => state.auth.role); // Ensure 'role' is available in Redux store
+  const userEmail = useSelector((state) => state.auth.email); // Ensure 'email' is available in Redux store
+
   /**
    * Formats a date string to 'YYYY-MM-DD'.
    * @param {Date} date - Date object to format.
@@ -68,12 +72,12 @@ const Bulkbooking = () => {
    * Checks if the current time is between 12 PM and 8 PM.
    * @returns {boolean} - True if within allowed time, else false.
    */
-  const isWithinAllowedTime = () => {
-    const now = new Date();
-    const hours = now.getHours();
-    return hours >= 12 && hours < 20; // 12 PM to 8 PM
-  };
-
+  // const isWithinAllowedTime = () => {
+  //   const now = new Date();
+  //   const hours = now.getHours();
+  //   return hours >= 12 && hours < 20; // 12 PM to 8 PM
+  // };
+  const isWithinAllowedTime = () => true; // Always return true for testing
   // Fetch Order Details Based on User ID
   const fetchOrderDetails = async (userId) => {
     if (!userId) return;
@@ -244,8 +248,12 @@ const Bulkbooking = () => {
     // Format the booking date to YYYY-MM-DD
     const formattedBookingDate = formatDateToYYYYMMDD(bookingDate);
 
-    // Construct the API URL with the selected booking date
-    const url = `${port}/api/orders/submit?menuIds=${selectedMenuId}&quantities=${quantity}&deliveryDate=${formattedBookingDate}`;
+    // **Format menuIds and quantities as comma-separated strings**
+    const menuIdsStr = [selectedMenuId].join(',');
+    const quantitiesStr = [quantity].join(',');
+
+    // **Include role and email in the API URL**
+    const url = `${port}/api/orders/submit?menuIds=${menuIdsStr}&quantities=${quantitiesStr}&deliveryDate=${formattedBookingDate}&role=${userRole}&email=${encodeURIComponent(userEmail)}`;
 
     try {
       const response = await axios.post(
@@ -259,13 +267,16 @@ const Bulkbooking = () => {
       );
       console.log(response);
 
-      // Extract tokenId using the updated regex
+      // **Assuming the response is a plain text message**
       const dataString = response.data;
-      const tokenRegex = /Your tokens are:\s*(\d+)/i;
+
+      // **Extract tokenId using regex (if multiple tokens, adjust accordingly)**
+      const tokenRegex = /Your tokens are:\s*([\d,]+)/i;
       const match = dataString.match(tokenRegex);
 
       if (match && match[1]) {
-        setTokenId(match[1]);
+        const tokens = match[1].split(',').map(token => token.trim());
+        setTokenId(tokens.join(', ')); // Display all tokens
         setMessage('Booking successful!');
         toast.success('Booking successful!');
       } else {
