@@ -7,6 +7,7 @@ import Home from './Components/Home';
 import PrivateRoute from './Components/PrivateRoute';
 import MenuChange from './Components/MenuChange';
 import Report from './Components/Report';
+import Menus from './Components/Test';
 import Bulkbooking from './Components/Bulkbooking';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -64,7 +65,15 @@ function App() {
             </PrivateRoute>
           }
         />
-
+<Route
+          path="/menuChange"
+          element={
+            <PrivateRoute>
+              <Menus/>
+           
+            </PrivateRoute>
+          }
+        />
 
           </Routes>
          
