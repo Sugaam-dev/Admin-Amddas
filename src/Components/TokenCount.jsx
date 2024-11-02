@@ -80,7 +80,7 @@ const TokenCount = () => {
             value={selectedEmailDomain}
             onChange={handleEmailChange}
           >
-            <option value="@amddas.net">@amddas.com</option>
+            <option value="@amddas.net">@amddas.net</option>
             <option value="@borgwarner.com">@borgwarner.com</option>
             <option value="@gmail.com">@gmail.com</option>
           </select>
