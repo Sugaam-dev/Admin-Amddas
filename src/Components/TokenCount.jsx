@@ -2,75 +2,67 @@ import React, { useState } from 'react';
 import '../Styles/dashboard.css'; // Ensure your CSS file is correctly imported
 import { port } from '../port/portno';
 import axios from 'axios';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+
 const TokenCount = () => {
   // State hooks for booking counts
   const [showTokenCount, setShowTokenCount] = useState(false);
   const [vegCount, setVegCount] = useState(0);
   const [eggCount, setEggCount] = useState(0);
   const [nonVegCount, setNonVegCount] = useState(0);
-const[error,setError]=useState('')
+  const [error, setError] = useState('');
+
   // State hooks for dropdown and calendar
-  const [selectedEmailDomain, setSelectedEmailDomain] = useState('@borgwarner.com');
+  const [selectedEmailDomain, setSelectedEmailDomain] = useState('@amddas.com');
   const [selectedDate, setSelectedDate] = useState('');
-const[selelctEnd,setEnd]=useState('')
+  const [selectEnd, setEnd] = useState('');
+
+  // Loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   const jwtToken = useSelector((state) => state.auth.token);
-
 
   // Handler functions
   const handleEmailChange = (e) => {
     setSelectedEmailDomain(e.target.value);
   };
 
-  const handleDate=(e)=>{
-    setEnd(e.target.value)
-  }
+  const handleDate = (e) => {
+    setEnd(e.target.value);
+  };
 
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
   };
 
-
-
   const handleCountClick = async () => {
-if(selectedEmailDomain && selectedDate !== ''){
+    if (selectedEmailDomain && selectedDate !== '' && selectEnd !== '') {
+      setIsLoading(true); // Start loading
+      setError(''); // Reset error
 
+      try {
+        const response = await axios.get(
+          `${port}/api/orders/count?startdate=${selectedDate}&enddate=${selectEnd}&domain=${selectedEmailDomain}`,
+          {
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+            },
+          }
+        );
+        console.log('API Response:', response);
 
-
-
-  try {
-    const response = await axios.get(
-      `${port}/api/orders/count?startdate=${selectedDate}&enddate=${selelctEnd}&domain=${selectedEmailDomain}`,
-      {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
+        setVegCount(response.data.totalVegCount);
+        setNonVegCount(response.data.totalNonVegCount);
+        setEggCount(response.data.totalEggCount);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to fetch counts. Please try again.');
+      } finally {
+        setIsLoading(false); // End loading
       }
-    );
-    console.log('API Response:', response);
-    setError('');
- 
-  
-setVegCount(response.data.totalVegCount)
-setNonVegCount(response.data.totalNonVegCount)
-setEggCount(response.data.totalEggCount)
- 
-
-   
-
-  } catch (err) {
-   console.log(err)
+    } else {
+      setError('Please select both dates and an email domain.');
     }
-   
-  }
-
-
-
-
-
-
-  
   };
 
   return (
@@ -88,6 +80,7 @@ setEggCount(response.data.totalEggCount)
             value={selectedEmailDomain}
             onChange={handleEmailChange}
           >
+            <option value="@amddas.net">@amddas.com</option>
             <option value="@borgwarner.com">@borgwarner.com</option>
             <option value="@gmail.com">@gmail.com</option>
           </select>
@@ -95,10 +88,10 @@ setEggCount(response.data.totalEggCount)
 
         {/* Date Picker */}
         <div className="input-box">
-          <label htmlFor="date-picker">From Date:</label>
+          <label htmlFor="start-date-picker">From Date:</label>
           <input
             type="date"
-            id="date-picker"
+            id="start-date-picker"
             className="bulk-booking-dropdown"
             value={selectedDate}
             onChange={handleDateChange}
@@ -106,33 +99,44 @@ setEggCount(response.data.totalEggCount)
         </div>
 
         <div className="input-box">
-          <label htmlFor="date-picker">To Date:</label>
+          <label htmlFor="end-date-picker">To Date:</label>
           <input
             type="date"
-            id="date-picker"
+            id="end-date-picker"
             className="bulk-booking-dropdown"
-            value={selelctEnd}
+            value={selectEnd}
             onChange={handleDate}
           />
         </div>
-
       </div>
+
+      {/* Error Message */}
+      {error && <div className="error-message">{error}</div>}
 
       {/* Count Button */}
       <div className="input-box" style={{ width: '100%', textAlign: 'center' }}>
-        <button className="count-button" onClick={handleCountClick}>
-          Count
+        <button
+          className="count-button"
+          onClick={handleCountClick}
+          disabled={isLoading} // Disable button while loading
+        >
+          {isLoading ? (
+            <>
+              {/* You can replace this with a spinner icon if preferred */}
+              <span className="spinner"></span> Counting...
+            </>
+          ) : (
+            'Count'
+          )}
         </button>
       </div>
 
       {/* TokenCount Section */}
-
-        <div className="total-booking-counts">
-          <p>Total Veg Bookings: {vegCount}</p>
-          <p>Total Egg Bookings: {eggCount}</p>
-          <p>Total Non-Veg Bookings: {nonVegCount}</p>
-        </div>
-      
+      <div className="total-booking-counts">
+        <p>Total Veg Bookings: {vegCount}</p>
+        <p>Total Egg Bookings: {eggCount}</p>
+        <p>Total Non-Veg Bookings: {nonVegCount}</p>
+      </div>
     </div>
   );
 };
