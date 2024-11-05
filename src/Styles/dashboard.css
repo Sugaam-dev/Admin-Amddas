@@ -67,12 +67,16 @@
     transition: background-color 0.3s;
 }
 
-.tab-dashboard-btn:hover,
-.tab-dashboard-btn.active {
+.tab-dashboard-btn:hover
+ {
     background-color: #34495e;
     border-radius: 4px;
 }
 
+.tab-dashboard-btn.active {
+    background-color: #1172d3;
+    border-radius: 4px;
+}
 .tab-icon {
     margin-right: 10px;
     font-size: 18px;

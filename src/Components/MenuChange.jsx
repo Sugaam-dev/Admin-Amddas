@@ -86,7 +86,7 @@ function MenuChange() {
     });
     setSelectedDate(selectedDateFromCal);
     setBookingDay(selectedDayName);
-    console.log(`Date selected: ${selectedDateFromCal} (${selectedDayName})`);
+   
     fetchMenuData(selectedDayName);
   };
 

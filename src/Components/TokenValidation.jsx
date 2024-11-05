@@ -111,7 +111,7 @@ setMenuType(response.data.menuType)
       setOtp(''); // Clear the input field after an error
     }
   };
-console.log(decoded)
+// console.log(decoded)
   // Handler for OTP input change
   const handleOtpChange = (e) => {
     const value = e.target.value;

@@ -5,6 +5,7 @@ import TokenValidation from './TokenValidation';
 import Bulkbooking from './Bulkbooking';
 import TokenCount from './TokenCount';
 import Sidebar from './Sidebar';
+import AddFoodItemModal from './MenusChangeModel/AddFoodItemModal';
 
 const Dashboard = () => {
   return (
@@ -29,6 +30,7 @@ const Dashboard = () => {
 
         </div>
       </div>
+   
     </div>
   );
 };

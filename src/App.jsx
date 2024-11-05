@@ -11,6 +11,7 @@ import Menus from './Components/Test';
 import Bulkbooking from './Components/Bulkbooking';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AddFoodItemModal from './Components/MenusChangeModel/AddFoodItemModal';
 
 
 function App() {
