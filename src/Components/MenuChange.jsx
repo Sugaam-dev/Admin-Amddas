@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Sidebar from './Sidebar';
 import '../Styles/menu.css';
-import {jwtDecode} from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode'; // Corrected import
 import { useSelector } from 'react-redux';
 import { port } from '../port/portno';
 import { FaEdit, FaTrash } from 'react-icons/fa';
@@ -16,7 +16,6 @@ function MenuChange() {
   // State Variables
   const [error, setError] = useState(null);
   const [menuData, setMenuData] = useState([]);
-  const [isWednesday, setIsWednesday] = useState(false);
   const [bookingDay, setBookingDay] = useState('');
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedMenuId, setSelectedMenuId] = useState(null);
@@ -67,11 +66,12 @@ function MenuChange() {
     }
   };
 
+  // Derived Variable for isWednesday
+  const isWednesday = bookingDay === 'Wednesday';
+
   // useEffect to set activeFilter when bookingDay changes
   useEffect(() => {
     if (bookingDay && menuData.length > 0) {
-      const isWed = bookingDay === 'Wednesday';
-      setIsWednesday(isWed);
       setActiveFilter('Veg'); // Set Veg as default filter
       applyFilter('Veg');
       console.log(`Booking day set to ${bookingDay}. Veg filter applied by default.`);
@@ -86,7 +86,7 @@ function MenuChange() {
     });
     setSelectedDate(selectedDateFromCal);
     setBookingDay(selectedDayName);
-   
+    console.log(`Date selected: ${selectedDateFromCal} (${selectedDayName})`);
     fetchMenuData(selectedDayName);
   };
 
@@ -138,7 +138,7 @@ function MenuChange() {
       <Sidebar />
 
       <div className="menu-container">
-        <h1 className="menu-title">Booking for {bookingDay} Menu</h1>
+        <h1 className="menu-title">Booking for {bookingDay || 'Select a Day'} Menu</h1>
 
         {/* Calendar Component for Date Selection */}
         <Calender passdata={handleDateSelection} />
