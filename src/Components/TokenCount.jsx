@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
-import '../Styles/dashboard.css';
+import '../Styles/dashboard.css'; // Ensure your CSS file is correctly imported
 import { port } from '../port/portno';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 
 const TokenCount = () => {
   // State hooks for booking counts
+  const [showTokenCount, setShowTokenCount] = useState(false);
   const [vegCount, setVegCount] = useState(0);
   const [eggCount, setEggCount] = useState(0);
   const [nonVegCount, setNonVegCount] = useState(0);
   const [error, setError] = useState('');
 
   // State hooks for dropdown and calendar
-  const [selectedEmailDomain, setSelectedEmailDomain] = useState('@amddas.net');
+  const [selectedEmailDomain, setSelectedEmailDomain] = useState('@amddas.com');
   const [selectedDate, setSelectedDate] = useState('');
   const [selectEnd, setEnd] = useState('');
 
-  // Loading and display states
+  // Loading state
   const [isLoading, setIsLoading] = useState(false);
-  const [showTokenCount, setShowTokenCount] = useState(false);
 
   const jwtToken = useSelector((state) => state.auth.token);
 
@@ -39,7 +39,6 @@ const TokenCount = () => {
     if (selectedEmailDomain && selectedDate !== '' && selectEnd !== '') {
       setIsLoading(true); // Start loading
       setError(''); // Reset error
-      setShowTokenCount(false); // Hide counts while loading new data
 
       try {
         const response = await axios.get(
@@ -55,7 +54,6 @@ const TokenCount = () => {
         setVegCount(response.data.totalVegCount);
         setNonVegCount(response.data.totalNonVegCount);
         setEggCount(response.data.totalEggCount);
-        setShowTokenCount(true); // Show counts after successful data fetch
       } catch (err) {
         console.error(err);
         setError('Failed to fetch counts. Please try again.');
@@ -82,7 +80,7 @@ const TokenCount = () => {
             value={selectedEmailDomain}
             onChange={handleEmailChange}
           >
-            <option value="@amddas.net">@amddas.net+@borgwarner.com</option>
+            <option value="@amddas.net">@amddas.net</option>
             <option value="@borgwarner.com">@borgwarner.com</option>
             <option value="@gmail.com">@gmail.com</option>
           </select>
@@ -124,6 +122,7 @@ const TokenCount = () => {
         >
           {isLoading ? (
             <>
+              {/* You can replace this with a spinner icon if preferred */}
               <span className="spinner"></span> Counting...
             </>
           ) : (
@@ -133,13 +132,11 @@ const TokenCount = () => {
       </div>
 
       {/* TokenCount Section */}
-      {showTokenCount && (
-        <div className="total-booking-counts">
-          <p>Total Veg Bookings: {vegCount}</p>
-          <p>Total Egg Bookings: {eggCount}</p>
-          <p>Total Non-Veg Bookings: {nonVegCount}</p>
-        </div>
-      )}
+      <div className="total-booking-counts">
+        <p>Total Veg Bookings: {vegCount}</p>
+        <p>Total Egg Bookings: {eggCount}</p>
+        <p>Total Non-Veg Bookings: {nonVegCount}</p>
+      </div>
     </div>
   );
 };
