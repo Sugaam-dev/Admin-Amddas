@@ -1,44 +1,33 @@
+// src/components/Test.js
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Sidebar from './Sidebar';
 import '../Styles/menu.css';
-import { jwtDecode } from 'jwt-decode'; // Corrected import
 import { useSelector } from 'react-redux';
 import { port } from '../port/portno';
-import AddFoodItemModal from './MenusChangeModel/AddFoodItemModal';
-import AddMenuItemModal from './MenusChangeModel/AddMenuItemModal';
+
+import { FaPlus, FaTrash } from 'react-icons/fa';
 
 function Test() {
-  // Redux Selectors
-  const jwtToken = useSelector((state) => state.auth.token);
+  // Retrieve auth state from Redux
+  const reduxAuth = useSelector((state) => state.auth);
+  const jwtToken = reduxAuth.token ? reduxAuth.token.replace(/^"|"$/g, '') : null;
+
   const [error, setError] = useState(null);
   const [menuData, setMenuData] = useState([]);
   const [selectedDay, setSelectedDay] = useState('');
+
   const [foodItems, setFoodItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [showAddFoodItemModal, setShowAddFoodItemModal] = useState(false);
-  const [showAddMenuItemModal, setShowAddMenuItemModal] = useState(false);
-  const [selectedMenuId, setSelectedMenuId] = useState(null);
 
-  // Decode JWT to get userId
-  let userId;
-  if (jwtToken) {
-    try {
-      const decoded = jwtDecode(jwtToken);
-      userId = decoded.userId;
-    } catch (error) {
-      console.error('Error decoding JWT:', error);
-      setError('Invalid authentication token.');
-    }
-  } else {
-    console.warn('JWT token is missing.');
-    setError('Authentication token is missing.');
-  }
-
-  // Fetch Food Items
   useEffect(() => {
     const fetchFoodItems = async () => {
+      if (!jwtToken) {
+        setError('Please log in to access this page.');
+        return;
+      }
       try {
         const response = await axios.get(`${port}/api/food-items`, {
           headers: {
@@ -52,14 +41,12 @@ function Test() {
       }
     };
 
-    if (jwtToken) {
-      fetchFoodItems();
-    }
+    fetchFoodItems();
   }, [jwtToken]);
 
-  // Fetch Food Categories
   useEffect(() => {
     const fetchCategories = async () => {
+      if (!jwtToken) return;
       try {
         const response = await axios.get(`${port}/api/food-categories`, {
           headers: {
@@ -69,15 +56,13 @@ function Test() {
         setCategories(response.data);
       } catch (error) {
         console.error('Error fetching categories:', error);
+        setError('Failed to fetch categories.');
       }
     };
 
-    if (jwtToken) {
-      fetchCategories();
-    }
+    fetchCategories();
   }, [jwtToken]);
 
-  // Fetch Menus for Selected Day
   const fetchMenusForDay = async (day) => {
     setLoading(true);
     try {
@@ -96,22 +81,23 @@ function Test() {
     }
   };
 
-  // Handle Day Change
   const handleDayChange = (event) => {
     const day = event.target.value;
     setSelectedDay(day);
-    fetchMenusForDay(day);
+    if (day) {
+      fetchMenusForDay(day);
+    } else {
+      setMenuData([]);
+    }
   };
 
-  // Handle Food Item Change
   const handleFoodItemChange = (menuIndex, menuItemIndex, newItemId) => {
     const updatedMenuData = [...menuData];
     const menu = updatedMenuData[menuIndex];
     const menuItem = menu.menuItems[menuItemIndex];
 
-    // Find the new food item
     const newFoodItem = foodItems.find(
-      (item) => item.itemId === parseInt(newItemId)
+      (item) => item.itemId === parseInt(newItemId, 10)
     );
 
     if (newFoodItem) {
@@ -122,8 +108,12 @@ function Test() {
     }
   };
 
-  // Handle Save Menu
   const handleSaveMenu = async (menuId, menuItems) => {
+    if (!jwtToken) {
+      setError('Please log in to access this page.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -137,6 +127,7 @@ function Test() {
       await axios.put(`${port}/api/menus/${menuId}/menu-items`, menuItemDTOs, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json',
         },
       });
 
@@ -149,7 +140,21 @@ function Test() {
     }
   };
 
-  // Get Menu Type from isVeg
+  // Directly delete menu item from UI
+  const handleDeleteMenuItem = (menuId, menuItemId) => {
+    const updatedMenuData = menuData.map((menu) => {
+      if (menu.menuId === menuId) {
+        return {
+          ...menu,
+          menuItems: menu.menuItems.filter((mi) => mi.menuItemId !== menuItemId),
+        };
+      }
+      return menu;
+    });
+
+    setMenuData(updatedMenuData);
+  };
+
   const getMenuTypeFromIsVeg = (isVeg) => {
     switch (isVeg) {
       case 1:
@@ -163,104 +168,35 @@ function Test() {
     }
   };
 
-  // Handle Add Menu Item
+  // Directly add a new empty menu item row with a unique ID and empty selection
   const handleAddMenuItem = (menuId) => {
-    setSelectedMenuId(menuId);
-    setShowAddMenuItemModal(true);
-  };
+    const updatedMenuData = menuData.map((menu) => {
+      if (menu.menuId === menuId) {
+        // Generate a new unique menuItemId locally
+        const existingIds = menu.menuItems.map((mi) => mi.menuItemId);
+        const maxId = existingIds.length > 0 ? Math.max(...existingIds) : 0;
+        const newMenuItemId = maxId + 1;
 
-  // Handle Add Menu Item to Menu
-  const handleAddMenuItemToMenu = async (foodItemId) => {
-    try {
-      const menuItemDTO = {
-        item: { itemId: foodItemId },
-      };
-
-      const response = await axios.post(
-        `${port}/api/menus/${selectedMenuId}/menu-items`,
-        menuItemDTO,
-        {
-          headers: {
-            Authorization: `Bearer ${jwtToken}`,
+        // Create a placeholder menuItem with default item properties
+        const newMenuItem = {
+          menuItemId: newMenuItemId,
+          item: {
+            itemId: '',
+            itemName: 'Select Item',
+            isVeg: menu.isVeg, // default assumption based on menu type
+            category: { categoryName: '' },
           },
-        }
-      );
+        };
 
-      const newMenuItem = response.data;
+        return {
+          ...menu,
+          menuItems: [...menu.menuItems, newMenuItem],
+        };
+      }
+      return menu;
+    });
 
-      // Update the menuData state
-      const updatedMenuData = menuData.map((menu) => {
-        if (menu.menuId === selectedMenuId) {
-          return {
-            ...menu,
-            menuItems: [...menu.menuItems, newMenuItem],
-          };
-        }
-        return menu;
-      });
-
-      setMenuData(updatedMenuData);
-
-      // Close the modal
-      setShowAddMenuItemModal(false);
-
-      alert('Menu item added successfully.');
-    } catch (error) {
-      console.error('Error adding menu item:', error);
-      alert('Failed to add menu item.');
-    }
-  };
-
-  // Handle Save New Food Item
-  const handleSaveNewFoodItem = async (newFoodItem, menuId) => {
-    try {
-      // Save new food item to the backend
-      const response = await axios.post(`${port}/api/food-items`, newFoodItem, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      });
-      const savedFoodItem = response.data;
-
-      // Update foodItems state
-      setFoodItems([...foodItems, savedFoodItem]);
-
-      // Add the new food item to the selected menu
-      const menuItemDTO = {
-        item: { itemId: savedFoodItem.itemId },
-      };
-
-      const addMenuItemResponse = await axios.post(
-        `${port}/api/menus/${menuId}/menu-items`,
-        menuItemDTO,
-        {
-          headers: {
-            Authorization: `Bearer ${jwtToken}`,
-          },
-        }
-      );
-      const newMenuItem = addMenuItemResponse.data;
-
-      // Update menuData state
-      const updatedMenuData = menuData.map((menu) => {
-        if (menu.menuId === parseInt(menuId)) {
-          return {
-            ...menu,
-            menuItems: [...menu.menuItems, newMenuItem],
-          };
-        }
-        return menu;
-      });
-      setMenuData(updatedMenuData);
-
-      // Close the modal
-      setShowAddFoodItemModal(false);
-
-      alert('Food item added and added to menu successfully.');
-    } catch (error) {
-      console.error('Error adding food item:', error);
-      alert('Failed to add food item.');
-    }
+    setMenuData(updatedMenuData);
   };
 
   return (
@@ -271,92 +207,114 @@ function Test() {
         <div className="menu-container">
           <h1 className="menu-title">Admin Panel - Edit Menus</h1>
 
-          {/* Day Selection */}
-          <div>
-            <label>Select Day: </label>
-            <select value={selectedDay} onChange={handleDayChange}>
-              <option value="">-- Select Day --</option>
-              <option value="Monday">Monday</option>
-              <option value="Tuesday">Tuesday</option>
-              <option value="Wednesday">Wednesday</option>
-              <option value="Thursday">Thursday</option>
-              <option value="Friday">Friday</option>
-            </select>
-          </div>
+          {!jwtToken && <p>Please log in to access this page.</p>}
 
-          {/* Add New Food Item Button */}
-          <button onClick={() => setShowAddFoodItemModal(true)}>Add New Food Item</button>
+          {jwtToken && (
+            <>
+              {/* Day Selection */}
+              <div style={{ marginBottom: '20px' }}>
+                <label htmlFor="day-select">Select Day: </label>
+                <select
+                  id="day-select"
+                  value={selectedDay}
+                  onChange={handleDayChange}
+                  style={{ marginLeft: '10px' }}
+                >
+                  <option value="">-- Select Day --</option>
+                  <option value="Monday">Monday</option>
+                  <option value="Tuesday">Tuesday</option>
+                  <option value="Wednesday">Wednesday</option>
+                  <option value="Thursday">Thursday</option>
+                  <option value="Friday">Friday</option>
+                </select>
+              </div>
 
-          {/* Display Error Messages */}
-          {error && <p style={{ color: 'red' }}>{error}</p>}
+              {error && <p style={{ color: 'red' }}>{error}</p>}
+              {loading && <p>Loading...</p>}
 
-          {/* Display Loading Indicator */}
-          {loading && <p>Loading...</p>}
-
-          {/* Menus Display */}
-          {menuData.map((menu, menuIndex) => (
-            <div key={menu.menuId} className="menu-card">
-              <h2>{getMenuTypeFromIsVeg(menu.isVeg)} for {selectedDay}</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Menu Item ID</th>
-                    <th>Food Item</th>
-                    <th>Category</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {menu.menuItems.map((menuItem, menuItemIndex) => (
-                    <tr key={menuItem.menuItemId}>
-                      <td>{menuItem.menuItemId}</td>
-                      <td>
-                        <select
-                          value={menuItem.item.itemId}
-                          onChange={(e) =>
-                            handleFoodItemChange(menuIndex, menuItemIndex, e.target.value)
-                          }
-                        >
-                          {foodItems
-                            .filter((item) => item.isVeg === menu.isVeg)
-                            .map((item) => (
-                              <option key={item.itemId} value={item.itemId}>
-                                {item.itemName}
-                              </option>
-                            ))}
-                        </select>
-                      </td>
-                      <td>{menuItem.item.category?.categoryName}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <button onClick={() => handleSaveMenu(menu.menuId, menu.menuItems)}>
-                Save Changes for {getMenuTypeFromIsVeg(menu.isVeg)}
-              </button>
-              <button onClick={() => handleAddMenuItem(menu.menuId)}>
-                Add Menu Item
-              </button>
-            </div>
-          ))}
-
-          {/* Add Food Item Modal */}
-          {showAddFoodItemModal && (
-            <AddFoodItemModal
-              onClose={() => setShowAddFoodItemModal(false)}
-              onSave={handleSaveNewFoodItem}
-              categories={categories}
-              menus={menuData}
-            />
-          )}
-
-          {/* Add Menu Item Modal */}
-          {showAddMenuItemModal && (
-            <AddMenuItemModal
-              onClose={() => setShowAddMenuItemModal(false)}
-              onAdd={handleAddMenuItemToMenu}
-              menuIsVeg={menuData.find((menu) => menu.menuId === selectedMenuId)?.isVeg}
-              foodItems={foodItems}
-            />
+              {menuData.map((menu, menuIndex) => (
+                <div key={menu.menuId} className="menu-card" style={{ marginBottom: '30px' }}>
+                  <h2>
+                    {getMenuTypeFromIsVeg(menu.isVeg)} for {selectedDay}
+                  </h2>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Menu Item ID</th>
+                        <th>Food Item</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {menu.menuItems.map((menuItem, menuItemIndex) => (
+                        <tr key={menuItem.menuItemId}>
+                          <td>{menuItem.menuItemId}</td>
+                          <td>
+                            <select
+                              value={menuItem.item.itemId || ''}
+                              onChange={(e) =>
+                                handleFoodItemChange(menuIndex, menuItemIndex, e.target.value)
+                              }
+                            >
+                              <option value="">-- Select Food Item --</option>
+                              {foodItems.map((item) => {
+                                // Filter items by menu type if needed
+                                return (
+                                  <option key={item.itemId} value={item.itemId}>
+                                    {item.itemName} (
+                                    {item.isVeg === 1
+                                      ? 'Veg'
+                                      : item.isVeg === 0
+                                      ? 'Non-Veg'
+                                      : 'Egg'}
+                                    )
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </td>
+                          <td>
+                            {menuItem.item.category?.categoryName || ''}
+                            {menuItem.item.isVeg !== undefined && (
+                              <> ({menuItem.item.isVeg === 1 ? 'Veg' : menuItem.item.isVeg === 0 ? 'Non-Veg' : 'Egg'})</>
+                            )}
+                          </td>
+                          <td>
+                            {/* Delete Button */}
+                            <button
+                              onClick={() => handleDeleteMenuItem(menu.menuId, menuItem.menuItemId)}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                color: 'red',
+                                fontSize: '1.2em',
+                              }}
+                              title="Delete Menu Item"
+                            >
+                              <FaTrash />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div style={{ marginTop: '10px' }}>
+                    <button
+                      onClick={() => handleSaveMenu(menu.menuId, menu.menuItems)}
+                      style={{ marginRight: '10px' }}
+                    >
+                      Save Changes for {getMenuTypeFromIsVeg(menu.isVeg)}
+                    </button>
+                    {/* Add Menu Item Button */}
+                    <button onClick={() => handleAddMenuItem(menu.menuId)}>
+                      <FaPlus /> Add Menu Item
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </>
           )}
         </div>
       </div>

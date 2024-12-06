@@ -12,7 +12,7 @@ import Bulkbooking from './Components/Bulkbooking';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AddFoodItemModal from './Components/MenusChangeModel/AddFoodItemModal';
-
+import MenusChange from './Components/Menuchangeitem';
 
 function App() {
   return (
@@ -71,6 +71,15 @@ function App() {
           element={
             <PrivateRoute>
               <Menus/>
+           
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/MenuChangeItem"
+          element={
+            <PrivateRoute>
+              <MenusChange/>
            
             </PrivateRoute>
           }
